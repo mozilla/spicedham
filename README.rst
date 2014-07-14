@@ -11,7 +11,7 @@ Features
 
 :Code:         https://github.com/iankronquist/spicedham/
 :Issues:         https://github.com/iankronquist/spicedham/issues
-:License:      BSD 3-clause; See LICENSE
+:License:      Mozilla Public License Version 2.0; See LICENSE
 :Contributors: See AUTHORS.rst
 
 

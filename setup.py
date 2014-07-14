@@ -35,13 +35,13 @@ setup(
     include_package_data=True,
     install_requires=[
     ],
-    license="BSD",
+    license="MPL v2",
     zip_safe=True,
     keywords='',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License',
+        'License :: OSI Approved :: MPL v2',
         'Natural Language :: English',
         "Programming Language :: Python :: 2",
         'Programming Language :: Python :: 2.6',
