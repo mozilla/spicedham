@@ -30,7 +30,7 @@ setup(
     long_description=readme + '\n\n' + history,
     author='Ian Kronquist',
     author_email='iankronquist@gmail.com',
-    url='https://github.com/iankronquist/spicedham',
+    url='https://github.com/mozilla/spicedham',
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
