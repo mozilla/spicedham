@@ -1,16 +1,16 @@
-===============================
+=========
+spicedham
+=========
 
-===============================
-
-Spam filter library developed for input
+Spam filter library developed for Input.
 
 Features
---------
+========
 
 * TODO
 
-:Code:         https://github.com/iankronquist/spicedham/
-:Issues:         https://github.com/iankronquist/spicedham/issues
+:Code:         https://github.com/mozilla/spicedham/
+:Issues:       https://github.com/mozilla/spicedham/issues
 :License:      Mozilla Public License Version 2.0; See LICENSE
 :Contributors: See AUTHORS.rst
 
@@ -18,8 +18,8 @@ Features
 Install
 =======
 
-From PyPI
----------
+From PyPI (doesn't work, yet)
+-----------------------------
 
 Run::
 
@@ -31,6 +31,8 @@ For hacking
 
 Run::
 
-    $ git clone https://github.com/iankronquist/spicedham
+    # Get the code
+    $ git clone https://github.com/mozilla/spicedham
+
     # Create a virtualenvironment
     $ pip install -e .
