@@ -1,0 +1,4 @@
+SQLAlchemy==0.9.7
+peep==1.2
+requests==2.3.0
+wsgiref==0.1.2
