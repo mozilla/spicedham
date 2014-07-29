@@ -13,7 +13,8 @@ Types of Contributions
 Report Bugs
 -----------
 
-Report bugs at https://github.com/iankronquist/spicedham/issues .
+Report bugs in the `issue tracker
+<https://github.com/mozilla/spicedham/issues>`_.
 
 If you are reporting a bug, please include:
 
@@ -48,7 +49,8 @@ articles, and such.
 Submit Feedback
 ---------------
 
-The best way to send feedback is to file an issue at https://github.com/iankronquist/spicedham/issues.
+The best way to send feedback is to file an issue in the
+`issue tracker <https://github.com/mozilla/spicedham/issues>`_.
 
 If you are proposing a feature:
 
@@ -122,4 +124,4 @@ Tips
 
 To run a subset of tests::
 
-	$ python -m unittest tests.test_spicedham
+    $ python -m unittest tests.test_spicedham
