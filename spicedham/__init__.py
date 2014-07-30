@@ -62,38 +62,33 @@ class SpicedHam(object):
 
 
     def is_spam(self, response):
-        # If this doesn't exist then the DB hasn't been trained
         session = self.sessionFactory()
         query = session.query(WordProbability).filter(WordProbability.word=='*')
+        # If this doesn't exist then the DB hasn't been trained
         total = query.one()
         import q
-
-        pSpamGivenBigram = float(total.numSpam) / float(total.numTotal)
-        q(total.numSpam)
-        q(total.numTotal)
-        q(pSpamGivenBigram)
-        pHamGivenBigram = 1.0 - pSpamGivenBigram
-        q(pHamGivenBigram)
+        pSpam = float(total.numSpam) / float(total.numTotal)
+        # Since spam and ham are independant events
+        pHam = 1.0 - pSpam
+        pSpamGivenWord = pSpam
+        pHamGivenWord = pHam
         for description in response['description'].split(' '):
             try:
                 query = session.query(WordProbability).filter(WordProbability.word==description)
                 word = query.one()
             except NoResultFound, e:
                 continue
+            # TODO  words with no spam should not be in the DB, fix training algo
             if word.numSpam == 0:
                 continue
-            q(total.numTotal)
-            q(word.numTotal)
-            q(word.numSpam)
-            pBigram = float(word.numTotal) / float(total.numTotal)
-            q(pBigram)
-            pBigramGivenSpam = float(word.numSpam) / float(word.numTotal)
-            q(pBigramGivenSpam)
-            pBigramGivenHam = float(word.numTotal - word.numSpam) / float(word.numTotal)
-            q(pBigramGivenHam)
-            pSpamGivenBigram *= float(pBigramGivenSpam) / float(pBigram)
-            pHamGivenBigram *= float(pBigramGivenHam) / float(pBigram)
-            q(pSpamGivenBigram)
-            q(pHamGivenBigram)
-        pSpam = float(pSpamGivenBigram) / float(pHamGivenBigram)
-        return pSpam
+            pWord = float(word.numTotal) / float(total.numTotal)
+            pWordGivenSpam = float(word.numSpam) / float(total.numSpam)
+            pWordGivenHam = float(word.numTotal - word.numSpam) / float(total.numTotal - total.numSpam)
+
+            pSpamGivenWord *= pWordGivenSpam / pWord
+            pHamGivenWord *= pWordGivenHam / pWord
+        #pSpam = float(pSpamGivenWord) / float(pHamGivenWord)
+        if 0.0 > round(pSpamGivenWord, 3) < 1.0:
+            print "wtf?"
+            print pSpamGivenWord, pWordGivenSpam, pWord, word.numTotal, word.numSpam
+        return pSpamGivenWord / (pSpamGivenWord + pHamGivenWord)
