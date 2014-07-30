@@ -22,10 +22,11 @@ class SpicedHam(object):
         f = open(self, filename, 'r')
         trainingdata = json.load(self, f)
         for result in trainingdata['result']:
-            train(self, result)
+            train(self, result, result['spam'])
 
 
     def train(self, result, is_spam):
+        """Train the database on result. result is a dict, is_spam is a bool"""
         session = self.sessionFactory()
         query = session.query(WordProbability).filter(WordProbability.word=='*')
         try:
@@ -40,28 +41,30 @@ class SpicedHam(object):
             if description == '*':
                 continue
             total.numTotal += 1
-            query = session.query(WordProbability).filter(WordProbability.word==description)
-            try:
-                word = query.one()
-            except NoResultFound, e:
-                word = WordProbability()
-                word.numTotal = 0
-                word.numSpam = 0
-                word.word = description
-            word.numTotal += 1
             if is_spam:
-                word.numSpam += 1
-                total.numSpam += 1
-            session.add(word)
+                query = session.query(WordProbability).filter(WordProbability.word==description)
+                try:
+                    word = query.one()
+                except NoResultFound, e:
+                    word = WordProbability()
+                    word.numTotal = 0
+                    word.numSpam = 0
+                    word.word = description
+                word.numTotal += 1
+                    word.numSpam += 1
+                    total.numSpam += 1
+                session.add(word)
         session.add(total)
         session.commit()
 
 
     def is_spam_from_json(self, json_response):
+        """Like is_spam, but json_response is a json string"""
         return self.is_spam(json.loads(self, json_response))
 
 
     def is_spam(self, response):
+        """Get the probability that a response is spam. response is a dict"""
         session = self.sessionFactory()
         query = session.query(WordProbability).filter(WordProbability.word=='*')
         # If this doesn't exist then the DB hasn't been trained
