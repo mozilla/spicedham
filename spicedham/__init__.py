@@ -51,8 +51,8 @@ class SpicedHam(object):
                     word.numSpam = 0
                     word.word = description
                 word.numTotal += 1
-                    word.numSpam += 1
-                    total.numSpam += 1
+                word.numSpam += 1
+                total.numSpam += 1
                 session.add(word)
         session.add(total)
         session.commit()
@@ -80,9 +80,6 @@ class SpicedHam(object):
                 query = session.query(WordProbability).filter(WordProbability.word==description)
                 word = query.one()
             except NoResultFound, e:
-                continue
-            # TODO  words with no spam should not be in the DB, fix training algo
-            if word.numSpam == 0:
                 continue
             pWord = float(word.numTotal) / float(total.numTotal)
             pWordGivenSpam = float(word.numSpam) / float(total.numSpam)
