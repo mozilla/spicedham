@@ -41,19 +41,22 @@ class SpicedHam(object):
             if description == '*':
                 continue
             total.numTotal += 1
+            query = session.query(WordProbability).filter(WordProbability.word==description)
+            try:
+                word = query.one()
+            except NoResultFound, e:
+                word = WordProbability()
+                word.numTotal = 0
+                word.numSpam = 0
+                word.word = description
+            word.numTotal += 1
             if is_spam:
-                query = session.query(WordProbability).filter(WordProbability.word==description)
-                try:
-                    word = query.one()
-                except NoResultFound, e:
-                    word = WordProbability()
-                    word.numTotal = 0
-                    word.numSpam = 0
-                    word.word = description
-                word.numTotal += 1
                 word.numSpam += 1
                 total.numSpam += 1
-                session.add(word)
+            session.add(word)
+        # Remove results with no spam from database
+        query = session.query(WordProbability).filter(WordProbability.numSpam==0)
+        map(session.delete, query.all())
         session.add(total)
         session.commit()
 
@@ -69,13 +72,14 @@ class SpicedHam(object):
         query = session.query(WordProbability).filter(WordProbability.word=='*')
         # If this doesn't exist then the DB hasn't been trained
         total = query.one()
-        import q
         pSpam = float(total.numSpam) / float(total.numTotal)
         # Since spam and ham are independant events
         pHam = 1.0 - pSpam
         pSpamGivenWord = pSpam
         pHamGivenWord = pHam
         for description in response['description'].split(' '):
+            if description == '*':
+                continue
             try:
                 query = session.query(WordProbability).filter(WordProbability.word==description)
                 word = query.one()
@@ -87,8 +91,4 @@ class SpicedHam(object):
 
             pSpamGivenWord *= pWordGivenSpam / pWord
             pHamGivenWord *= pWordGivenHam / pWord
-        #pSpam = float(pSpamGivenWord) / float(pHamGivenWord)
-        if 0.0 > round(pSpamGivenWord, 3) < 1.0:
-            print "wtf?"
-            print pSpamGivenWord, pWordGivenSpam, pWord, word.numTotal, word.numSpam
         return pSpamGivenWord / (pSpamGivenWord + pHamGivenWord)
