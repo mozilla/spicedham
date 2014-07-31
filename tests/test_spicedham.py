@@ -21,9 +21,9 @@ class TestSpicedham(unittest.TestCase):
         if os.path.exists(test_data_dir):
             pass
         elif os.path.exists(tarball) :
-            tarfile.open(tarball)
-            tarfile.extractall()
-            tarfile.close()
+            tr = tarfile.open(tarball)
+            tr.extractall()
+            tr.close()
         else:
             raise 'No test data found'
         self.sh = SpicedHam()
