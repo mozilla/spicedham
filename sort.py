@@ -80,7 +80,7 @@ for fname in os.listdir('corpus/train/ham'):
         print 'corpus/train/ham/' + fname
     elif ps >  0.5:
         print "\033[;91mWARN\033[0m" + str(ps)
-        print 'corpus/train/spam/' + fname
+        print 'corpus/train/ham/' + fname
         numHamWarnings += 1
     #else:
 #    print 'success ' + str(ps)
