@@ -31,6 +31,11 @@ class TestSpicedham(unittest.TestCase):
         for file_name in os.listdir(dir_name):
             data = json.load(open(os.path.join(dir_name, file_name)))
             self.sh.train(data, False)
+        dir_name = os.path.join(test_data_dir, 'train', 'spam')
+        for file_name in os.listdir(dir_name):
+            data = json.load(open(os.path.join(dir_name, file_name)))
+            self.sh.train(data, True)
+
 
     def test_on_training_data(self, test_data_dir='corpus'):
         self._test_all_files_in_dir(
@@ -48,7 +53,9 @@ class TestSpicedham(unittest.TestCase):
         tuning_factor = 0.5
         for filename in os.listdir(data_dir):
             f = open(os.path.join(data_dir,  filename), 'r')
-            probability = self.sh.is_spam(json.load(f))
+            json_response = json.load(f)
+            probability = self.sh.is_spam(json_response)
+            print probability
             self.assertGreaterEqual(probability, 0.0)
             self.assertLessEqual(probability, 1.0)
             if should_be_spam:
