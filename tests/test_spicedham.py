@@ -20,7 +20,7 @@ class TestSpicedham(unittest.TestCase):
     def setUp(self, tarball='corpus.tar.gz', test_data_dir='corpus'):
         if os.path.exists(test_data_dir):
             pass
-        elif os.path.exists(tarball) :
+        elif os.path.exists(tarball):
             tr = tarfile.open(tarball)
             tr.extractall()
             tr.close()
@@ -33,12 +33,16 @@ class TestSpicedham(unittest.TestCase):
             self.sh.train(data, False)
 
     def test_on_training_data(self, test_data_dir='corpus'):
-        self._test_all_files_in_dir(os.path.join(test_data_dir, 'train', 'spam'), True)
-        self._test_all_files_in_dir(os.path.join(test_data_dir, 'train', 'ham'), False)
-        
+        self._test_all_files_in_dir(
+            os.path.join(test_data_dir, 'train', 'spam'), True)
+        self._test_all_files_in_dir(
+            os.path.join(test_data_dir, 'train', 'ham'), False)
+
     def test_on_control_data(self, test_data_dir='corpus'):
-        self._test_all_files_in_dir(os.path.join(test_data_dir, 'control', 'spam'), True)
-        self._test_all_files_in_dir(os.path.join(test_data_dir, 'control', 'ham'), False)
+        self._test_all_files_in_dir(
+            os.path.join(test_data_dir, 'control', 'spam'), True)
+        self._test_all_files_in_dir(
+            os.path.join(test_data_dir, 'control', 'ham'), False)
 
     def _test_all_files_in_dir(self, data_dir, should_be_spam):
         tuning_factor = 0.5

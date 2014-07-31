@@ -10,7 +10,6 @@ from models import Base
 
 class SpicedHam(object):
 
-
     def __init__(self):
         self.engine = create_engine('sqlite:///:memory:')
         self.sessionFactory = sessionmaker()
@@ -24,11 +23,11 @@ class SpicedHam(object):
         for result in trainingdata['result']:
             train(self, result, result['spam'])
 
-
     def train(self, result, is_spam):
         """Train the database on result. result is a dict, is_spam is a bool"""
         session = self.sessionFactory()
-        query = session.query(WordProbability).filter(WordProbability.word=='*')
+        query = session.query(WordProbability).filter(
+            WordProbability.word == '*')
         try:
             total = query.one()
         except NoResultFound, e:
@@ -41,7 +40,8 @@ class SpicedHam(object):
             if description == '*':
                 continue
             total.numTotal += 1
-            query = session.query(WordProbability).filter(WordProbability.word==description)
+            query = session.query(WordProbability).filter(
+                WordProbability.word == description)
             try:
                 word = query.one()
             except NoResultFound, e:
@@ -55,21 +55,21 @@ class SpicedHam(object):
                 total.numSpam += 1
             session.add(word)
         # Remove results with no spam from database
-        query = session.query(WordProbability).filter(WordProbability.numSpam==0)
+        query = session.query(WordProbability).filter(
+            WordProbability.numSpam == 0)
         map(session.delete, query.all())
         session.add(total)
         session.commit()
-
 
     def is_spam_from_json(self, json_response):
         """Like is_spam, but json_response is a json string"""
         return self.is_spam(json.loads(self, json_response))
 
-
     def is_spam(self, response):
         """Get the probability that a response is spam. response is a dict"""
         session = self.sessionFactory()
-        query = session.query(WordProbability).filter(WordProbability.word=='*')
+        query = session.query(WordProbability).filter(
+            WordProbability.word == '*')
         # If this doesn't exist then the DB hasn't been trained
         total = query.one()
         pSpam = float(total.numSpam) / float(total.numTotal)
@@ -81,13 +81,15 @@ class SpicedHam(object):
             if description == '*':
                 continue
             try:
-                query = session.query(WordProbability).filter(WordProbability.word==description)
+                query = session.query(WordProbability).filter(
+                    WordProbability.word == description)
                 word = query.one()
             except NoResultFound, e:
                 continue
             pWord = float(word.numTotal) / float(total.numTotal)
             pWordGivenSpam = float(word.numSpam) / float(total.numSpam)
-            pWordGivenHam = float(word.numTotal - word.numSpam) / float(total.numTotal - total.numSpam)
+            pWordGivenHam = float(
+                word.numTotal - word.numSpam) / float(total.numTotal - total.numSpam)
 
             pSpamGivenWord *= pWordGivenSpam / pWord
             pHamGivenWord *= pWordGivenHam / pWord
