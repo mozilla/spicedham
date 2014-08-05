@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+#import q
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -18,10 +19,10 @@ class SpicedHam(object):
 
     def train_bulk(self, file_name):
         """Train model on input api data with an additional "spam" key"""
-        f = open(self, filename, 'r')
-        trainingdata = json.load(self, f)
-        for result in trainingdata['result']:
-            train(self, result, result['spam'])
+        f = open(file_name, 'r')
+        trainingdata = json.load(f)
+        for result in trainingdata['results']:
+            self.train(result, result['spam'])
 
     def train(self, result, is_spam):
         """Train the database on result. result is a dict, is_spam is a bool"""
@@ -35,9 +36,11 @@ class SpicedHam(object):
             total.word = '*'
             total.numTotal = 0
             total.numSpam = 0
-        for description in result['description'].split(' '):
+        for description in set(result['description'].split(' ')):
+            #if len(description) < 4:
+            #    continue
             description = description.lower()
-            if description == '*':
+            if description == '*' or description == '':
                 continue
             total.numTotal += 1
             query = session.query(WordProbability).filter(
@@ -70,6 +73,7 @@ class SpicedHam(object):
         session = self.sessionFactory()
         query = session.query(WordProbability).filter(
             WordProbability.word == '*')
+        pstr = ''
         # If this doesn't exist then the DB hasn't been trained
         total = query.one()
         pSpam = float(total.numSpam) / float(total.numTotal)
@@ -77,8 +81,9 @@ class SpicedHam(object):
         pHam = 1.0 - pSpam
         pSpamGivenWord = pSpam
         pHamGivenWord = pHam
-        for description in response['description'].split(' '):
-            if description == '*':
+        pWordList = []
+        for description in set(response['description'].split(' ')):
+            if description == '*' or description == '':
                 continue
             try:
                 query = session.query(WordProbability).filter(
@@ -90,7 +95,14 @@ class SpicedHam(object):
             pWordGivenSpam = float(word.numSpam) / float(total.numSpam)
             pWordGivenHam = float(
                 word.numTotal - word.numSpam) / float(total.numTotal - total.numSpam)
-
+            #pWordList.append((word.word, pWordGivenSpam, pWord, pSpam, float(pWordGivenSpam)/float(pWord) * pSpam))
             pSpamGivenWord *= pWordGivenSpam / pWord
             pHamGivenWord *= pWordGivenHam / pWord
-        return pSpamGivenWord / (pSpamGivenWord + pHamGivenWord)
+
+        p = pSpamGivenWord / (pSpamGivenWord + pHamGivenWord)
+        #if p > 0.7:
+        #    q(pWordList)
+        #    q(response['description'])
+        #    q(pWordGivenSpam)
+        #    q(pWordGivenHam)
+        return p
