@@ -41,6 +41,12 @@ def test_on_control_data():
     print 'testing against the control data set'
     test_on_data(os.path.join('corpus', 'control'))
 
+def train_on_api_like_data(file_name='crowd-corpus.json'):
+    if os.path.exists(file_name):
+        print 'training on the crowd corpus'
+        sh.train_bulk(file_name)
+    else:
+        print 'crowd corpus not found. continuing without it.'
 
 def test_on_data(test_data_dir):
     _test_all_files_in_dir(
@@ -58,7 +64,7 @@ def _test_all_files_in_dir(data_dir, should_be_spam):
         'False-': [],
         'Error': [],
     }
-    tuning_factor = 0.5
+    tuning_factor = 0.9
     for filename in os.listdir(data_dir):
         f = open(os.path.join(data_dir,  filename), 'r')
         json_response = json.load(f)
@@ -82,6 +88,7 @@ def show_results(test_results):
     red = '\033[0;31m'
     green = '\033[0;32m'
     nocolor = '\033[0m'
+    print test_results['False-']
     print '{} responses analyzed'.format(len(test_results['Total']))
     print 'True positives:  {} ({}%)'.format(len(test_results['True+']),
         percent(len(test_results['True+']), len(test_results['Total'])))
@@ -98,19 +105,21 @@ def percent(numerator, denominator):
     if denominator == 0: return 0
     return round(float(numerator) / float(denominator) * 100, 3)
 
-def test_on_api_data(url='https://input.mozilla.org/api/v1/feedback/'):
+def test_on_api_data(url='https://input.mozilla.org/api/v1/feedback/?locales=en-US'):
     reqs = requests.get(url)
     resps = reqs.json()
     numSpam = 0
     numTotal = resps['count']
     for resp in resps['results']:
         probability = sh.is_spam(resp)
-        if probability > 0.5:
+        if probability > 0.9:
             numSpam += 1
             resp['spam'] = True
         else:
             resp['spam'] = False
-    f = open('anaylzed-api-data' + str(datetime.now()) + '.json', 'w')
+    file_name = 'anaylized-api-data' + str(datetime.now()) + '.json'
+    print 'writing to {}'.format(file_name)
+    f = open(file_name, 'w')
     json.dump(resps, f)
     print 'api'
     print '{} api responses anaylzed.'.format(numTotal)
@@ -122,6 +131,7 @@ if __name__ == '__main__':
     setUp()
     train_on(os.path.join('corpus', 'train', 'spam'), True)
     train_on(os.path.join('corpus', 'train', 'ham'), False)
+    #train_on_api_like_data()
     test_on_training_data()
-    test_on_control_data()
+    #test_on_control_data()
     test_on_api_data()
