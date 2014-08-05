@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import re
 import json
 #import q
 
@@ -17,11 +18,16 @@ class SpicedHam(object):
         self.sessionFactory.configure(bind=self.engine)
         Base.metadata.create_all(self.engine)
 
-    def train_bulk(self, file_name):
+    def train_bulk_file(self, file_name):
         """Train model on input api data with an additional "spam" key"""
         f = open(file_name, 'r')
         trainingdata = json.load(f)
         for result in trainingdata['results']:
+            self.train(result, result['spam'])
+
+    def train_bulk_data(self, data):
+        """Train model on input api data with an additional "spam" key"""
+        for result in data['results']:
             self.train(result, result['spam'])
 
     def train(self, result, is_spam):
@@ -36,7 +42,7 @@ class SpicedHam(object):
             total.word = '*'
             total.numTotal = 0
             total.numSpam = 0
-        for description in set(result['description'].split(' ')):
+        for description in set(re.split('[\r\n.,? ]', result['description'])):
             #if len(description) < 4:
             #    continue
             description = description.lower()
@@ -82,7 +88,7 @@ class SpicedHam(object):
         pSpamGivenWord = pSpam
         pHamGivenWord = pHam
         pWordList = []
-        for description in set(response['description'].split(' ')):
+        for description in set(re.split('[\r\n.,?! ]', response['description'])):
             if description == '*' or description == '':
                 continue
             try:
