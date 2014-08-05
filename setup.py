@@ -35,6 +35,12 @@ setup(
     include_package_data=True,
     install_requires=[
     ],
+    entry_points = """
+    [spicedham.classifiers]
+    setup=bayes.Bayes.setup
+    train=bayes.Bayes.train
+    classify=bayes.Bayes.classify
+    """
     license="MPL v2",
     zip_safe=True,
     keywords='',
