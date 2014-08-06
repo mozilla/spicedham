@@ -1,114 +1,60 @@
 # -*- coding: utf-8 -*-
+from __future__ import division
 import re
 import json
-#import q
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.orm.exc import NoResultFound
-from models import WordProbability
-from models import Base
+from spicedham import backend
 
+def foo():
+    print 'rest'
 
-class SpicedHam(object):
+class Bayes(object):
 
-    def __init__(self):
-        self.engine = create_engine('sqlite:///:memory:')
-        self.sessionFactory = sessionmaker()
-        self.sessionFactory.configure(bind=self.engine)
-        Base.metadata.create_all(self.engine)
-
-    def train_bulk_file(self, file_name):
-        """Train model on input api data with an additional "spam" key"""
-        f = open(file_name, 'r')
-        trainingdata = json.load(f)
-        for result in trainingdata['results']:
-            self.train(result, result['spam'])
-
-    def train_bulk_data(self, data):
-        """Train model on input api data with an additional "spam" key"""
-        for result in data['results']:
-            self.train(result, result['spam'])
+    def setup(self):
+        backend.setup()
 
     def train(self, result, is_spam):
         """Train the database on result. result is a dict, is_spam is a bool"""
-        session = self.sessionFactory()
-        query = session.query(WordProbability).filter(
-            WordProbability.word == '*')
-        try:
-            total = query.one()
-        except NoResultFound, e:
-            total = WordProbability()
-            total.word = '*'
-            total.numTotal = 0
-            total.numSpam = 0
-        for description in set(re.split('[\r\n.,? ]', result['description'])):
-            #if len(description) < 4:
-            #    continue
-            description = description.lower()
-            if description == '*' or description == '':
-                continue
-            total.numTotal += 1
-            query = session.query(WordProbability).filter(
-                WordProbability.word == description)
-            try:
-                word = query.one()
-            except NoResultFound, e:
-                word = WordProbability()
-                word.numTotal = 0
-                word.numSpam = 0
-                word.word = description
-            word.numTotal += 1
+        print 'training'
+        total = backend.get_key('*', {'numSpam': 0, 'numTotal': 0})
+        results = set(result)
+        for item in results:
+            total['numTotal'] += 1
             if is_spam:
-                word.numSpam += 1
-                total.numSpam += 1
-            session.add(word)
-        # Remove results with no spam from database
-        query = session.query(WordProbability).filter(
-            WordProbability.numSpam == 0)
-        map(session.delete, query.all())
-        session.add(total)
-        session.commit()
+                total['numSpam'] += 1
+            item = _train_single(item, is_spam)
+        backend.set_key_list(results)
 
-    def is_spam_from_json(self, json_response):
-        """Like is_spam, but json_response is a json string"""
-        return self.is_spam(json.loads(self, json_response))
 
-    def is_spam(self, response):
-        """Get the probability that a response is spam. response is a dict"""
-        session = self.sessionFactory()
-        query = session.query(WordProbability).filter(
-            WordProbability.word == '*')
-        pstr = ''
-        # If this doesn't exist then the DB hasn't been trained
-        total = query.one()
+    def _train_single(item, is_spam):
+        value = backend.get_key(item)
+        if not value:
+            value = Store()
+            value['numTotal'] = 0
+            value['numSpam'] = 0
+        value['numTotal'] += 1
+        if is_spam:
+            value['numSpam'] += 1
+        return value
+
+    def classify(self, response):
+        """Get the probability that a response is spam. response is a list"""
+        total = backend.get_key('*')
         pSpam = float(total.numSpam) / float(total.numTotal)
         # Since spam and ham are independant events
         pHam = 1.0 - pSpam
         pSpamGivenWord = pSpam
         pHamGivenWord = pHam
         pWordList = []
-        for description in set(re.split('[\r\n.,?! ]', response['description'])):
+        for description in set(response):
             if description == '*' or description == '':
                 continue
-            try:
-                query = session.query(WordProbability).filter(
-                    WordProbability.word == description)
-                word = query.one()
-            except NoResultFound, e:
-                continue
-            pWord = float(word.numTotal) / float(total.numTotal)
-            pWordGivenSpam = float(word.numSpam) / float(total.numSpam)
-            pWordGivenHam = float(
-                word.numTotal - word.numSpam) / float(total.numTotal - total.numSpam)
-            #pWordList.append((word.word, pWordGivenSpam, pWord, pSpam, float(pWordGivenSpam)/float(pWord) * pSpam))
+            word = backend.get_key(description, {'numTotal': 0, 'numSpam': 0})
+            pWord = word.numTotal / total.numTotal
+            pWordGivenSpam = word.numSpam / total.numSpam
+            pWordGivenHam = word.numTotal - word.numSpam / total.numTotal - total.numSpam
             pSpamGivenWord *= pWordGivenSpam / pWord
             pHamGivenWord *= pWordGivenHam / pWord
 
         p = pSpamGivenWord / (pSpamGivenWord + pHamGivenWord)
-        #if p > 0.7:
-        #    q(pWordList)
-        #    q(response['description'])
-        #    q(pWordGivenSpam)
-        #    q(pWordGivenHam)
         return p
