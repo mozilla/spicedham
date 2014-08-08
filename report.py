@@ -1,12 +1,11 @@
 import os
+import re
 import tarfile
 import json
 import requests
 from datetime import datetime
 
-from spicedham import SpicedHam
-
-sh = SpicedHam()
+import spicedham as sh
 
 def setUp(tarball='corpus.tar.gz', test_data_dir='corpus', backup_url='https://dl.dropboxusercontent.com/u/84239013/corpus.tar.gz'):
     if os.path.exists(test_data_dir):
@@ -29,7 +28,7 @@ def train_on(dir_name, is_spam):
         dir_name, is_spam)
     for file_name in os.listdir(dir_name):
         data = json.load(open(os.path.join(dir_name, file_name)))
-        sh.train(data, is_spam)
+        sh.train(re.split('[ .,?!]', data['description']), is_spam)
 
 
 def test_on_training_data():
@@ -64,11 +63,11 @@ def _test_all_files_in_dir(data_dir, should_be_spam):
         'False-': [],
         'Error': [],
     }
-    tuning_factor = 0.9
+    tuning_factor = 0.5
     for filename in os.listdir(data_dir):
         f = open(os.path.join(data_dir,  filename), 'r')
         json_response = json.load(f)
-        probability = sh.is_spam(json_response)
+        probability = sh.classify(re.split('[ \n\r.,?!]', json_response['description']))
         test_results['Total'].append(filename)
         if 0.0 > probability > 1.0:
             test_results['Error'].append(filename)
@@ -111,13 +110,13 @@ def test_on_api_data(url='https://input.mozilla.org/api/v1/feedback/?locales=en-
     numSpam = 0
     numTotal = resps['count']
     for resp in resps['results']:
-        probability = sh.is_spam(resp)
-        if probability > 0.9:
+        probability = sh.classify(re.split('[ \n\r.,?!]', resp['description']))
+        if probability > 0.5:
             numSpam += 1
             resp['spam'] = True
         else:
             resp['spam'] = False
-    file_name = 'anaylized-api-data' + str(datetime.now()) + '.json'
+    file_name = 'analyzed-api-data' + str(datetime.now()) + '.json'
     print 'writing to {}'.format(file_name)
     f = open(file_name, 'w')
     json.dump(resps, f)
