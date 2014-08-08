@@ -126,11 +126,34 @@ def test_on_api_data(url='https://input.mozilla.org/api/v1/feedback/?locales=en-
     print 'Tagged Hpam: {} ({}%)'.format(numTotal - numSpam,
         percent(numTotal - numSpam, numTotal))
 
+def test_on_sumo_data_from_mythmons_laptop(url='http://10.252.25.122:8900/api/1/questions?locale=en-US'):
+    reqs = requests.get(url)
+    resps = reqs.json()
+    numSpam = 0
+    numTotal = resps['count']
+    for resp in resps['results']:
+        probability = sh.classify(re.split('[ \n\r.,?!]', resp['content']))
+        if probability > 0.5:
+            numSpam += 1
+            resp['spam'] = True
+        else:
+            resp['spam'] = False
+    file_name = 'sumo-analyzed-api-data' + str(datetime.now()) + '.json'
+    print 'writing to {}'.format(file_name)
+    f = open(file_name, 'w')
+    json.dump(resps, f)
+    print 'api'
+    print '{} sumo api responses anaylzed.'.format(numTotal)
+    print 'Tagged Spam: {} ({}%)'.format(numSpam, percent(numSpam, numTotal))
+    print 'Tagged Hpam: {} ({}%)'.format(numTotal - numSpam,
+        percent(numTotal - numSpam, numTotal))
+
 if __name__ == '__main__':
     setUp()
     train_on(os.path.join('corpus', 'train', 'spam'), True)
     train_on(os.path.join('corpus', 'train', 'ham'), False)
     #train_on_api_like_data()
     test_on_training_data()
+    test_on_sumo_data_from_mythmons_laptop()
     #test_on_control_data()
     test_on_api_data()
