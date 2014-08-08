@@ -1,35 +1,34 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
+import q
 import re
 import json
 
-from spicedham import backend
-
-def foo():
-    print 'rest'
+from spicedham.backend import Backend
 
 class Bayes(object):
 
     def setup(self):
-        backend.setup()
+        Backend.setup()
 
     def train(self, result, is_spam):
         """Train the database on result. result is a dict, is_spam is a bool"""
-        print 'training'
-        total = backend.get_key('*', {'numSpam': 0, 'numTotal': 0})
-        results = set(result)
-        for item in results:
+        total = Backend.get_key('*', {'numSpam': 0, 'numTotal': 0})
+        results = []
+        for item in set(result):
             total['numTotal'] += 1
             if is_spam:
                 total['numSpam'] += 1
-            item = _train_single(item, is_spam)
-        backend.set_key_list(results)
+            value = self._train_single(item, is_spam)
+            results.append((item, value))
+        Backend.set_key_list(results)
+        Backend.set_key('*', total)
 
 
-    def _train_single(item, is_spam):
-        value = backend.get_key(item)
+    def _train_single(self, item, is_spam):
+        value = Backend.get_key(item)
         if not value:
-            value = Store()
+            value = {}
             value['numTotal'] = 0
             value['numSpam'] = 0
         value['numTotal'] += 1
@@ -39,22 +38,27 @@ class Bayes(object):
 
     def classify(self, response):
         """Get the probability that a response is spam. response is a list"""
-        total = backend.get_key('*')
-        pSpam = float(total.numSpam) / float(total.numTotal)
+        total = Backend.get_key('*')
+        pSpam = total['numSpam'] / total['numTotal']
         # Since spam and ham are independant events
         pHam = 1.0 - pSpam
         pSpamGivenWord = pSpam
         pHamGivenWord = pHam
         pWordList = []
+        q(response)
         for description in set(response):
+            #q(description)
             if description == '*' or description == '':
                 continue
-            word = backend.get_key(description, {'numTotal': 0, 'numSpam': 0})
-            pWord = word.numTotal / total.numTotal
-            pWordGivenSpam = word.numSpam / total.numSpam
-            pWordGivenHam = word.numTotal - word.numSpam / total.numTotal - total.numSpam
-            pSpamGivenWord *= pWordGivenSpam / pWord
+            word = Backend.get_key(description, {'numTotal': 0, 'numSpam': 0})
+            if word['numTotal'] == 0 or word['numSpam'] == 0:
+                continue
+            assert word['numTotal'] >= word['numSpam']
+            pWord = (word['numTotal']) / (total['numTotal'])
+            pWordGivenSpam = (word['numSpam']) / total['numSpam']
+            pWordGivenHam = (word['numTotal'] - word['numSpam']) / (total['numTotal'] - total['numSpam'])
+            pSpamGivenWord *= (pWordGivenSpam) / pWord
             pHamGivenWord *= pWordGivenHam / pWord
 
-        p = pSpamGivenWord / (pSpamGivenWord + pHamGivenWord)
-        return p
+        p = (pSpamGivenWord) / (pSpamGivenWord + pHamGivenWord)
+        return q(p)
