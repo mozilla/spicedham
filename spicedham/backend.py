@@ -1,14 +1,19 @@
-from config import config
+from spicedham.config import config
+
+from sqlalchemywrapper import SqlAlchemyWrapper
+#from elasticsearchwrapper import ElasticSearchWrapper
+#from djangoormwrapper import DjangoOrmWrapper
+
 
 class BackendNotRecognizedException(Exception):
     """Possible backends are "sqlalchemy", "elasticsearch", and "djangoorm"""""
     pass
 
 if  config['backend'] == 'sqlalchemy':
-    from sqlalchemywrapper.sqlalchemywrapper import SqlAlchemyWrapper as Backend
+    Backend = SqlAlchemyWrapper()
 elif config['backend'] == 'elasticsearch':
-    from elasticsearchwrapper import ElasticSearchWrapper as Backend
+    Backend = ElasticSearchWrapper()
 elif config['backend'] == 'djangoorm':
-    from djangoormwrapper import DjangoOrmWrapper as Backend
+    Backend = DjangoOrmWrapper()
 else:
     raise BackendNotRecognizedException
