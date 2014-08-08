@@ -36,7 +36,7 @@ setup(
     install_requires=[
     ],
     entry_points = {
-        'spicedham.classifiers': 'bayes = spicedham.bayes:foo'
+        'spicedham.classifiers': 'bayes = spicedham.bayes:Bayes'
     },
     license="MPL v2",
     zip_safe=True,
