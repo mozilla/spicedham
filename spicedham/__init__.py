@@ -19,4 +19,3 @@ def classify(classification_data):
     for plugin in plugins:
         average_score += plugin.classify(classification_data)
     return average_score / len(plugins)
-        plugin.setup()
