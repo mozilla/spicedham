@@ -5,7 +5,8 @@ from config import config
 
 plugins = []
 for plugin in iter_entry_points(group='spicedham.classifiers', name=None):
-    plugins.append(plugin.load())
+    pluginClass = plugin.load()
+    plugins.append(pluginClass())
 
 
 def train(training_data, is_spam):
@@ -13,15 +14,9 @@ def train(training_data, is_spam):
         plugin.train(training_data, is_spam)
 
 
-def classify(classification_data, is_spam):
+def classify(classification_data):
     average_score = 0
-    for plugin_method in plugins:
-        average_score += plugin_method(classification_data, is_spam)
+    for plugin in plugins:
+        average_score += plugin.classify(classification_data)
     return average_score / len(plugins)
-
-
-def setup():
-    for pluginMethod in plugins:
-        print pluginMethod
-        print type(pluginMethod)
-        pluginMethod()
+        plugin.setup()
