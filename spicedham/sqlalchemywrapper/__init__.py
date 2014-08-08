@@ -9,14 +9,24 @@ from spicedham import config
 from models import Base
 from models import Store
 
+class EngineNotRecognizedError(Exception):
+    pass
+
+class EngineNotFoundError(Exception):
+    """There was no engine specified in the config"""
+    pass
+
 class SqlAlchemyWrapper(BaseWrapper):
 
-    def setup(self):
-        self.engine = config['engine']
-        self.sessionFactory = sessionmaker()
-        Base.metadata.create_all(self.engine)
+    def __init__(self):
+        try:
+            self.engine = create_engine(config['engine'])
+            self.sessionFactory = sessionmaker(self.engine)
+            Base.metadata.create_all(self.engine)
+        except KeyError, e:
+            raise EngineNotFoundError
 
-    def get_key(key, default=None):
+    def get_key(self, key, default=None):
         session = self.sessionFactory()
         query = session.query(Store).filter(Store.key==key)
         try:
@@ -26,11 +36,11 @@ class SqlAlchemyWrapper(BaseWrapper):
             value = default
         return value
 
-    def set_key(key, value):
+    def set_key(self, key, value):
         session = self.sessionFactory()
         store = Store()
-        value = json.dump(value)
+        value = json.dumps(value)
         store.value = value
         store.key = key
-        session.add(store)
+        session.merge(store)
         session.commit()
