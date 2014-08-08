@@ -7,7 +7,12 @@ Spam filter library developed for Input.
 Features
 ========
 
-* TODO
+TODO
+----
+- ☐ Implement naive baiyesian approach
+- ☐ Implement a K-Nearest-Neighbors approach?
+- ☑ Define database schema prototype
+- ☑ Implement a blacklist prototype
 
 :Code:         https://github.com/mozilla/spicedham/
 :Issues:       https://github.com/mozilla/spicedham/issues

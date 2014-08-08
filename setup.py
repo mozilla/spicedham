@@ -25,7 +25,7 @@ def get_version():
 
 setup(
     name='spicedham',
-    version=get_version(),
+    version='0.0.0',
     description='Spam filter library developed for input',
     long_description=readme + '\n\n' + history,
     author='Ian Kronquist',
@@ -35,6 +35,9 @@ setup(
     include_package_data=True,
     install_requires=[
     ],
+    entry_points = {
+        'spicedham.classifiers': 'bayes = spicedham.bayes:Bayes'
+    },
     license="MPL v2",
     zip_safe=True,
     keywords='',

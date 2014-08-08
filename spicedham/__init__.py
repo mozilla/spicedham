@@ -1,6 +1,21 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+from pkg_resources import iter_entry_points
 
-__author__ = 'Ian Kronquist'
-__email__ = 'iankronquist@gmail.com'
-__version__ = '0.1.0'
+from config import config
+
+
+plugins = []
+for plugin in iter_entry_points(group='spicedham.classifiers', name=None):
+    pluginClass = plugin.load()
+    plugins.append(pluginClass())
+
+
+def train(training_data, is_spam):
+    for plugin in plugins:
+        plugin.train(training_data, is_spam)
+
+
+def classify(classification_data):
+    average_score = 0
+    for plugin in plugins:
+        average_score += plugin.classify(classification_data)
+    return average_score / len(plugins)
