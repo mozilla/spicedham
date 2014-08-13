@@ -16,25 +16,15 @@ class Bayes(object):
         total = Backend.get_key('*', {'numSpam': 0, 'numTotal': 0})
         results = []
         for item in set(result):
+            value = Backend.get_key(item, {'numSpam': 0, 'numTotal': 0})
             total['numTotal'] += 1
+            value['numTotal'] += 1
             if is_spam:
                 total['numSpam'] += 1
-            value = self._train_single(item, is_spam)
+                value['numSpam'] += 1
             results.append((item, value))
         Backend.set_key_list(results)
         Backend.set_key('*', total)
-
-
-    def _train_single(self, item, is_spam):
-        value = Backend.get_key(item)
-        if not value:
-            value = {}
-            value['numTotal'] = 0
-            value['numSpam'] = 0
-        value['numTotal'] += 1
-        if is_spam:
-            value['numSpam'] += 1
-        return value
 
     def classify(self, response):
         """Get the probability that a response is spam. response is a list"""
