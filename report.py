@@ -3,33 +3,11 @@ import re
 import tarfile
 import json
 import requests
+import time
 from datetime import datetime
 
 import spicedham as sh
-
-def setUp(tarball='corpus.tar.gz', test_data_dir='corpus', backup_url='https://dl.dropboxusercontent.com/u/84239013/corpus.tar.gz'):
-    if os.path.exists(test_data_dir):
-        pass
-    elif os.path.exists(tarball):
-        tr = tarfile.open(tarball)
-        tr.extractall()
-        tr.close()
-    else:
-        r = requests.get(backup_url)
-        s = r.read()
-        f = open(tarball, 'wb')
-        f.write(s)
-        setup()
-        return
-
-
-def train_on(dir_name, is_spam):
-    print 'training with the belief that everything in {} is spam is {}'.format(
-        dir_name, is_spam)
-    for file_name in os.listdir(dir_name):
-        data = json.load(open(os.path.join(dir_name, file_name)))
-        sh.train(re.split('[ .,?!]', data['description']), is_spam)
-
+THRESHHOLD = 0.5
 
 def test_on_training_data():
     print 'testing against the training data set'
@@ -40,21 +18,34 @@ def test_on_control_data():
     print 'testing against the control data set'
     test_on_data(os.path.join('corpus', 'control'))
 
-def train_on_api_like_data(file_name='crowd-corpus.json'):
+def train_on_api_like_data(file_name):
+    time_start = time.time()
+    split_time = 0
+    train_time = 0
     if os.path.exists(file_name):
-        print 'training on the crowd corpus'
-        sh.train_bulk(file_name)
+        print 'training on the file ' + file_name
+        description_spam = []
+        description_ham = []
+        with open(file_name, 'r') as f:
+            load_start = time.time()
+            j = json.load(f)
+            print 'finished loading file ', str(time.time() - load_start)
+        for result in j['results']:
+            split_start = time.time()
+            description = re.split('[ .,?!\n\r]', result['description'])
+            split_time += split_start - time.time()
+            train_start = time.time()
+            sh.train(description, result['spam'])
+            train_time += train_start - time.time()
+        #sh.train(description_ham, False)
+        #sh.train(description_spam, True)
     else:
         print 'crowd corpus not found. continuing without it.'
+    print 'total time', time_start - time.time()
+    print 'split time', split_time, 'train time', train_time
 
-def test_on_data(test_data_dir):
-    _test_all_files_in_dir(
-        os.path.join(test_data_dir, 'spam'), True)
-    _test_all_files_in_dir(
-        os.path.join(test_data_dir, 'ham'), False)
-
-
-def _test_all_files_in_dir(data_dir, should_be_spam):
+def test_file(data_file_name):
+    print 'testing on ' + data_file_name
     test_results = {
         'Total': [],
         'True+': [],
@@ -63,25 +54,24 @@ def _test_all_files_in_dir(data_dir, should_be_spam):
         'False-': [],
         'Error': [],
     }
-    tuning_factor = 0.5
-    for filename in os.listdir(data_dir):
-        f = open(os.path.join(data_dir,  filename), 'r')
-        json_response = json.load(f)
-        probability = sh.classify(re.split('[ \n\r.,?!]', json_response['description']))
-        test_results['Total'].append(filename)
-        if 0.0 > probability > 1.0:
-            test_results['Error'].append(filename)
-        if should_be_spam:
-            if probability > tuning_factor:
-                test_results['True+'].append(filename)
+    with open(data_file_name, 'r') as f:
+        j = json.load(f)
+        for resp in j['results']:
+            test_results['Total'].append(resp['id'])
+            probability = sh.classify(re.split('[ \n\r.,?!]', resp['description']))
+            if 0.0 > probability > 1.0:
+                test_results['Errors'].append(resp['id'])
+            if probability > THRESHHOLD:
+                if resp['spam']:
+                    test_results['True+'].append(resp['id'])
+                else:
+                    test_results['False+'].append(resp['id'])
             else:
-                test_results['False-'].append(filename)
-        else:
-            if probability < tuning_factor:
-                test_results['True-'].append(filename)
-            else:
-                test_results['False+'].append(filename)
-    show_results(test_results)
+                if resp['spam']:
+                    test_results['False-'].append(resp['id'])
+                else:
+                    test_results['True-'].append(resp['id'])
+        show_results(test_results)
 
 def show_results(test_results):
     red = '\033[0;31m'
@@ -110,8 +100,8 @@ def test_on_api_data(url='https://input.mozilla.org/api/v1/feedback/?locales=en-
     numSpam = 0
     numTotal = resps['count']
     for resp in resps['results']:
-        probability = sh.classify(re.split('[ \n\r.,?!]', resp['description']))
-        if probability > 0.5:
+        probability = sh.classify([ x for x in re.split('[ \n\r.,?!]', resp['description']) if x != ''])
+        if probability > THRESHHOLD:
             numSpam += 1
             resp['spam'] = True
         else:
@@ -133,7 +123,7 @@ def test_on_sumo_data_from_mythmons_laptop(url='http://10.252.25.122:8900/api/1/
     numTotal = resps['count']
     for resp in resps['results']:
         probability = sh.classify(re.split('[ \n\r.,?!]', resp['content']))
-        if probability > 0.5:
+        if probability > THRESHHOLD:
             numSpam += 1
             resp['spam'] = True
         else:
@@ -149,11 +139,8 @@ def test_on_sumo_data_from_mythmons_laptop(url='http://10.252.25.122:8900/api/1/
         percent(numTotal - numSpam, numTotal))
 
 if __name__ == '__main__':
-    setUp()
-    train_on(os.path.join('corpus', 'train', 'spam'), True)
-    train_on(os.path.join('corpus', 'train', 'ham'), False)
-    #train_on_api_like_data()
-    test_on_training_data()
-    test_on_sumo_data_from_mythmons_laptop()
-    #test_on_control_data()
+    train_on_api_like_data("jcorpus_new.json")
+    #train_on_api_like_data("jcorpus.json")
+    test_file('jcorpus.json')
+    #test_file('jcorpus_new.json')
     test_on_api_data()
