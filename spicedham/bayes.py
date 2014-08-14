@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
-import q
 import re
 import json
 
@@ -41,7 +40,7 @@ class Bayes(object):
             if description == '*' or description == '':
                 continue
             word = Backend.get_key(description, {'numTotal': 0, 'numSpam': 0})
-            if word['numTotal'] == 0 or word['numSpam'] == 0:
+            if word['numTotal'] == 0 or  word['numSpam'] == 0:
                 continue
             assert word['numTotal'] >= word['numSpam']
             pWord = (word['numTotal']) / (total['numTotal'])
@@ -51,4 +50,4 @@ class Bayes(object):
             pHamGivenWord *= pWordGivenHam / pWord
 
         p = (pSpamGivenWord) / (pSpamGivenWord + pHamGivenWord)
-        return q(p)
+        return (p)
