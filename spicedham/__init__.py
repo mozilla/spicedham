@@ -16,6 +16,10 @@ def train(training_data, is_spam):
 
 def classify(classification_data):
     average_score = 0
+    total = 0
     for plugin in plugins:
-        average_score += plugin.classify(classification_data)
-    return average_score / len(plugins)
+        value = plugin.classify(classification_data)
+        if value != None:
+            total += 1
+            average_score += value
+    return average_score / total
