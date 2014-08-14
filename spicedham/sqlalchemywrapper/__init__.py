@@ -8,7 +8,6 @@ from spicedham import config
 
 from models import Base
 from models import Store
-import time
 
 class EngineNotRecognizedError(Exception):
     pass
@@ -48,7 +47,6 @@ class SqlAlchemyWrapper(BaseWrapper):
 
     def set_key_list(self, key_value_tuples):
         # it's more efficient to merge everything at once
-        start_time = time.time()
         session = self.sessionFactory()
         for key, value in key_value_tuples:
             store = Store()
@@ -57,4 +55,3 @@ class SqlAlchemyWrapper(BaseWrapper):
             store.key = key
             session.merge(store)
         session.commit()
-        print 'shoving it all in the db took {} seconds'.format(time.time() - start_time)
