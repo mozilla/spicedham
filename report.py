@@ -20,31 +20,23 @@ def test_on_control_data():
 
 def train_on_api_like_data(file_name):
     time_start = time.time()
-    split_time = 0
     train_time = 0
     if os.path.exists(file_name):
         print 'training on the file ' + file_name
         description_spam = []
         description_ham = []
         with open(file_name, 'r') as f:
-            load_start = time.time()
             j = json.load(f)
-            print 'finished loading file ', str(time.time() - load_start)
         for result in j['results']:
             if result['control']:
                 continue
-            split_start = time.time()
             description = re.split('[ .,?!\n\r]', result['description'])
-            split_time += split_start - time.time()
             train_start = time.time()
             sh.train(description, result['spam'])
-            train_time += train_start - time.time()
-        #sh.train(description_ham, False)
-        #sh.train(description_spam, True)
+            train_time += time.time() - train_start 
     else:
         print 'crowd corpus not found. continuing without it.'
-    print 'total time', time_start - time.time()
-    print 'split time', split_time, 'train time', train_time
+    print 'total time', time.time() - time_start 
 
 def test_file(data_file_name):
     print 'testing on ' + data_file_name
@@ -79,7 +71,7 @@ def show_results(test_results):
     red = '\033[0;31m'
     green = '\033[0;32m'
     nocolor = '\033[0m'
-    print test_results['False-']
+    print 'False negatives: ', test_results['False-']
     print '{} responses analyzed'.format(len(test_results['Total']))
     print 'True positives:  {} ({}%)'.format(len(test_results['True+']),
         percent(len(test_results['True+']), len(test_results['Total'])))
@@ -112,7 +104,6 @@ def test_on_api_data(url='https://input.mozilla.org/api/v1/feedback/?locales=en-
     print 'writing to {}'.format(file_name)
     f = open(file_name, 'w')
     json.dump(resps, f)
-    print 'api'
     print '{} api responses anaylzed.'.format(numTotal)
     print 'Tagged Spam: {} ({}%)'.format(numSpam, percent(numSpam, numTotal))
     print 'Tagged Hpam: {} ({}%)'.format(numTotal - numSpam,
@@ -136,7 +127,6 @@ def test_on_sumo_data_from_mythmons_laptop(url='http://10.252.25.122:8900/api/1/
     print 'writing to {}'.format(file_name)
     f = open(file_name, 'w')
     json.dump(resps, f)
-    print 'api'
     print '{} sumo api responses anaylzed.'.format(numTotal)
     print 'Tagged Spam: {} ({}%)'.format(numSpam, percent(numSpam, numTotal))
     print 'Tagged Hpam: {} ({}%)'.format(numTotal - numSpam,
