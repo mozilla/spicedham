@@ -39,6 +39,7 @@ setup(
         'spicedham.classifiers': [
             'bayes = spicedham.bayes:Bayes', 
             'digit_destroyer = spicedham.digitdestroyer:DigitDestroyer',
+            'nonsense_filter = spicedham.nonsensefilter:NonsenseFilter',
             ]
     },
     license="MPL v2",
