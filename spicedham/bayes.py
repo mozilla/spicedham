@@ -34,7 +34,6 @@ class Bayes(object):
         pSpamGivenWord = pSpam
         pHamGivenWord = pHam
         pWordList = []
-        q(response)
         for description in set(response):
             #q(description)
             if description == '*' or description == '':
