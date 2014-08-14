@@ -36,7 +36,10 @@ setup(
     install_requires=[
     ],
     entry_points = {
-        'spicedham.classifiers': 'bayes = spicedham.bayes:Bayes'
+        'spicedham.classifiers': [
+            'bayes = spicedham.bayes:Bayes', 
+            'digit_destroyer = spicedham.digitdestroyer:DigitDestroyer',
+            ]
     },
     license="MPL v2",
     zip_safe=True,
