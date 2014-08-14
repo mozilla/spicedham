@@ -31,6 +31,8 @@ def train_on_api_like_data(file_name):
             j = json.load(f)
             print 'finished loading file ', str(time.time() - load_start)
         for result in j['results']:
+            if result['control']:
+                continue
             split_start = time.time()
             description = re.split('[ .,?!\n\r]', result['description'])
             split_time += split_start - time.time()
@@ -122,6 +124,8 @@ def test_on_sumo_data_from_mythmons_laptop(url='http://10.252.25.122:8900/api/1/
     numSpam = 0
     numTotal = resps['count']
     for resp in resps['results']:
+        if not resp['control']:
+            continue
         probability = sh.classify(re.split('[ \n\r.,?!]', resp['content']))
         if probability > THRESHHOLD:
             numSpam += 1
@@ -139,8 +143,8 @@ def test_on_sumo_data_from_mythmons_laptop(url='http://10.252.25.122:8900/api/1/
         percent(numTotal - numSpam, numTotal))
 
 if __name__ == '__main__':
-    train_on_api_like_data("jcorpus_new.json")
-    #train_on_api_like_data("jcorpus.json")
-    test_file('jcorpus.json')
-    #test_file('jcorpus_new.json')
+    #train_on_api_like_data("jcorpus_new.json")
+    train_on_api_like_data("jcorpus.json")
+    #test_file('jcorpus.json')
+    test_file('jcorpus_new.json')
     test_on_api_data()
