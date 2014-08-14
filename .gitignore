@@ -1,5 +1,6 @@
 *.py[cod]
 corpus*
+analyzed-api*
 
 # C extensions
 *.so
