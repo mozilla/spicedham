@@ -22,4 +22,7 @@ def classify(classification_data):
         if value != None:
             total += 1
             average_score += value
-    return average_score / total
+    if total > 0:
+        return average_score / total
+    else:
+        return 0
