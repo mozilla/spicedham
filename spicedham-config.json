@@ -1,0 +1,12 @@
+{
+	"backend": "sqlalchemy",
+	"engine": "sqlite:///:memory:",
+	"digitdestroyer": {
+		"filter_match": 1,
+		"filter_miss": null
+	},
+	"nonsensefilter": {
+		"filter_match": 1,
+		"filter_miss": null
+	}
+}
