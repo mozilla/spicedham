@@ -26,9 +26,9 @@ class SqlAlchemyWrapper(BaseWrapper):
         except KeyError, e:
             raise EngineNotFoundError
 
-    def get_key(self, key, default=None):
+    def get_key(self, tag, key, default=None):
         session = self.sessionFactory()
-        query = session.query(Store).filter(Store.key==key)
+        query = session.query(Store).filter(Store.tag==tag, Store.key==key)
         try:
             store = query.one()
             value = json.loads(store.value)
@@ -36,16 +36,17 @@ class SqlAlchemyWrapper(BaseWrapper):
             value = default
         return value
 
-    def set_key(self, key, value):
+    def set_key(self, tag, key, value):
         session = self.sessionFactory()
         store = Store()
         value = json.dumps(value)
         store.value = value
         store.key = key
+        store.tag = tag
         session.merge(store)
         session.commit()
 
-    def set_key_list(self, key_value_tuples):
+    def set_key_list(self, tag, key_value_tuples):
         # it's more efficient to merge everything at once
         session = self.sessionFactory()
         for key, value in key_value_tuples:
@@ -53,5 +54,6 @@ class SqlAlchemyWrapper(BaseWrapper):
             value = json.dumps(value)
             store.value = value
             store.key = key
+            store.tag = tag
             session.merge(store)
         session.commit()
