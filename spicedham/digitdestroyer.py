@@ -1,3 +1,4 @@
+from itertools import repeat
 from spicedham.basewrapper import BaseWrapper
 from spicedham.config import config
 
@@ -9,8 +10,8 @@ class DigitDestroyer(object):
 
     def train(*args):
         pass
-    def classify(self, response):
-        if all(map(unicode.isdigit, response)):
+    def classify(self, tag, response):
+        if all(map(unicode.isdigit, repeat(tag), response)):
             return self.filter_match
         else:
             return self.filter_miss

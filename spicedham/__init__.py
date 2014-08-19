@@ -9,16 +9,16 @@ for plugin in iter_entry_points(group='spicedham.classifiers', name=None):
     plugins.append(pluginClass())
 
 
-def train(training_data, is_spam):
+def train(tag, training_data, is_spam):
     for plugin in plugins:
-        plugin.train(training_data, is_spam)
+        plugin.train(tag, training_data, is_spam)
 
 
-def classify(classification_data):
+def classify(tag, classification_data):
     average_score = 0
     total = 0
     for plugin in plugins:
-        value = plugin.classify(classification_data)
+        value = plugin.classify(tag, classification_data)
         if value != None:
             total += 1
             average_score += value
