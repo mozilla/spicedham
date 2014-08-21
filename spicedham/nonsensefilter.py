@@ -13,7 +13,7 @@ class NonsenseFilter(object):
         pass
 
     def classify(self, tag, response):
-        list_in_dict = lambda x: not Backend.get_key(x, False)
+        list_in_dict = lambda x, y: not Backend.get_key(x, y, False)
         if all(imap(list_in_dict, repeat(tag), response)):
             return self.filter_match
         else:
