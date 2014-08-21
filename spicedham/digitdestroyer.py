@@ -11,7 +11,7 @@ class DigitDestroyer(object):
     def train(*args):
         pass
     def classify(self, tag, response):
-        if all(map(unicode.isdigit, repeat(tag), response)):
+        if all(map(unicode.isdigit, unicode(response))):
             return self.filter_match
         else:
             return self.filter_miss
