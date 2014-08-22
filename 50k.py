@@ -24,14 +24,20 @@ def train_on_file(file_name):
     for response in data['results']:
         spicedham.train('description', process_response(response),
                         response['spam'])
+        spicedham.train('user_agent', process_response(response),
+                        response['spam'])
 
 
 def classify():
     with open('responses.json', 'r') as f:
         responses = json.load(f)
-    return {(result['id'], spicedham.classify('description',
+    return {(result['id'], spicedham.classify(tag,
              process_response(result)))
-            for result in responses['results']}
+            for result in responses['results']
+            for tag in ['user_agent', 'description']}
+
+def process_user_agent(user_agent):
+    return re.sub('[^A-Za-z]+', '', process_response(user_agent))
 
 
 def process_response(response):
@@ -43,7 +49,7 @@ def diff_against_previous(data, current_run_name):
     commit_hash = check_output(['git', 'rev-parse', 'HEAD'])
     with open('spicedham-config.json', 'r') as f:
         config_values = f.read()
-    build_set = lambda x: {(result['id'], result['spam']) for result in x}
+    build_set = lambda x: {result for result in x}
     last_run_data, last_run = get_last_run_data()
     prev_data = build_set(last_run_data)
     newly_detected = data - prev_data
@@ -68,6 +74,7 @@ def get_last_run_data():
         last_run = prev_runs[0]
         with open(last_run, 'r') as f:
             last_run_data = json.load(f)
+        last_run_data = {tuple(x) for x in last_run_data['data']}
         return (last_run_data, last_run)
     except IndexError:
         return ([], '')
