@@ -1,8 +1,9 @@
 from itertools import repeat
 from spicedham.basewrapper import BaseWrapper
 from spicedham.config import config
+from spicedham.baseplugin import BasePlugin
 
-class DigitDestroyer(object):
+class DigitDestroyer(BasePlugin):
 
     def __init__(self):
         self.filter_match = config['digitdestroyer']['filter_match']

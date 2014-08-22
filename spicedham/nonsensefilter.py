@@ -1,9 +1,11 @@
 import operator
 from itertools import imap, repeat
+
 from spicedham.config import config
 from spicedham.backend import Backend
+from spicedham.baseplugin import BasePlugin
 
-class NonsenseFilter(object):
+class NonsenseFilter(BasePlugin):
 
     def __init__(self):
         self.filter_match = config['nonsensefilter']['filter_match']

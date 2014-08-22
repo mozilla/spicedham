@@ -2,11 +2,11 @@
 from __future__ import division
 import re
 import json
-import q
 
 from spicedham.backend import Backend
+from spicedham.basepugin import BasePlugin
 
-class Bayes(object):
+class Bayes(BasePlugin):
 
     def setup(self):
         Backend.setup()
@@ -42,15 +42,12 @@ class Bayes(object):
             word = Backend.get_key(tag, description, {'numTotal': 0, 'numSpam': 0})
             if word['numTotal'] == 0 or  word['numSpam'] == 0:
                 continue
-            q(description)
             assert word['numTotal'] >= word['numSpam']
-            pWord = q(word['numTotal'] / total['numTotal'])
+            pWord = (word['numTotal'] / total['numTotal'])
             pWordGivenSpam = (word['numSpam']) / total['numSpam']
             pWordGivenHam = (word['numTotal'] - word['numSpam']) / (total['numTotal'] - total['numSpam'])
             pSpamGivenWord *= (pWordGivenSpam) / pWord
             pHamGivenWord *= pWordGivenHam / pWord
 
-        p = q((pSpamGivenWord) / (pSpamGivenWord + pHamGivenWord))
-        if p > 0.5:
-            q("SPAM")
+        p = ((pSpamGivenWord) / (pSpamGivenWord + pHamGivenWord))
         return (p)
