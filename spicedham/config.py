@@ -1,3 +1,8 @@
 import json
-f = open('spicedham-config.json', 'r')
-config = json.load(f)
+
+config = None
+
+def load_config():
+    if config == None:
+        f = open('spicedham-config.json', 'r')
+        config = json.load(f)
