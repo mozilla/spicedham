@@ -9,6 +9,7 @@ class BackendNotRecognizedException(Exception):
     """Possible backends are "sqlalchemy", "elasticsearch", and "djangoorm"""""
     pass
 
+#TODO: Stick this all in a load_backend function
 if  config['backend'] == 'sqlalchemy':
     Backend = SqlAlchemyWrapper()
 elif config['backend'] == 'elasticsearch':

@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# python 3 style division avoids the need to cast to floats
+# absolutely everywhere
 from __future__ import division
 import re
 import json
@@ -7,12 +9,18 @@ from spicedham.backend import Backend
 from spicedham.basepugin import BasePlugin
 
 class Bayes(BasePlugin):
+    """
+    A Bayesian classifier plugin
+    """
 
     def setup(self):
         Backend.setup()
 
     def train(self, tag, result, is_spam):
-        """Train the database on result. result is a dict, is_spam is a bool"""
+        """
+        Train the database on result. result is a dict, is_spam is a bool
+        """
+        # * is a special key representing all results. This is kind of a hack.
         total = Backend.get_key(tag, '*', {'numSpam': 0, 'numTotal': 0})
         results = []
         for item in set(result):
@@ -27,21 +35,25 @@ class Bayes(BasePlugin):
         Backend.set_key(tag, '*', total)
 
     def classify(self, tag, response):
-        """Get the probability that a response is spam. response is a list"""
+        """
+        Get the probability that a response is spam. response is a list
+        """
         total = Backend.get_key(tag, '*')
         pSpam = total['numSpam'] / total['numTotal']
         # Since spam and ham are independant events
-        q('CLASSIFY')
         pHam = 1.0 - pSpam
         pSpamGivenWord = pSpam
         pHamGivenWord = pHam
         pWordList = []
         for description in set(response):
+            # ignore reserved '*' or useless ''
             if description == '*' or description == '':
                 continue
             word = Backend.get_key(tag, description, {'numTotal': 0, 'numSpam': 0})
+            # If there's no data on the word, ignore it
             if word['numTotal'] == 0 or  word['numSpam'] == 0:
                 continue
+            # TODO: make an exception, not just an assert
             assert word['numTotal'] >= word['numSpam']
             pWord = (word['numTotal'] / total['numTotal'])
             pWordGivenSpam = (word['numSpam']) / total['numSpam']

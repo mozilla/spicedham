@@ -9,6 +9,7 @@ from spicedham import config
 from models import Base
 from models import Store
 
+# TODO: not necessary
 class EngineNotRecognizedError(Exception):
     pass
 
@@ -19,6 +20,9 @@ class EngineNotFoundError(Exception):
 class SqlAlchemyWrapper(BaseWrapper):
 
     def __init__(self):
+        """
+        Create engine and session factory from config values.
+        """
         try:
             self.engine = create_engine(config['engine'])
             self.sessionFactory = sessionmaker(self.engine)
@@ -27,6 +31,10 @@ class SqlAlchemyWrapper(BaseWrapper):
             raise EngineNotFoundError
 
     def get_key(self, tag, key, default=None):
+        """
+        Gets the value held by the tag, key composite key. If it doesn't exist,
+        return default.
+        """
         session = self.sessionFactory()
         query = session.query(Store).filter(Store.tag==tag, Store.key==key)
         try:
@@ -37,6 +45,9 @@ class SqlAlchemyWrapper(BaseWrapper):
         return value
 
     def set_key(self, tag, key, value):
+        """
+        Set the value held by the tag, key composite key.
+        """
         session = self.sessionFactory()
         store = Store()
         value = json.dumps(value)
@@ -47,7 +58,11 @@ class SqlAlchemyWrapper(BaseWrapper):
         session.commit()
 
     def set_key_list(self, tag, key_value_tuples):
-        # it's more efficient to merge everything at once
+        """
+        Given a list of tuples of tag, key, value set them all.
+        It is more efficient to use one session and merge all of the objects
+        at once than to merge them individually.
+        """
         session = self.sessionFactory()
         for key, value in key_value_tuples:
             store = Store()
