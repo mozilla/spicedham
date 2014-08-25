@@ -8,7 +8,8 @@ def load_plugins():
     """
     If not already loaded, load plugins.
     """
-    if _plugins == None
+    global _plugins
+    if _plugins == None:
         load_config()
         _plugins = []
         for plugin in iter_entry_points(group='spicedham.classifiers', name=None):
