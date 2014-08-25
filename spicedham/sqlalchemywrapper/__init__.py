@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import NoResultFound
 
 from spicedham.basewrapper import BaseWrapper
-from spicedham import config
+from spicedham.config import load_config
 
 from models import Base
 from models import Store
@@ -23,6 +23,7 @@ class SqlAlchemyWrapper(BaseWrapper):
         """
         Create engine and session factory from config values.
         """
+        config = load_config()
         try:
             self.engine = create_engine(config['engine'])
             self.sessionFactory = sessionmaker(self.engine)
