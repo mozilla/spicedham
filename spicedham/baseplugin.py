@@ -3,12 +3,6 @@ class BasePlugin(object):
     A base class for spicedham plugins.
     """
 
-    def setup():
-        """
-        Set up the plugin. May initiailze the database, create models, etc.
-        """
-        pass
-
     def train(self, tag, result, is_spam):
        """
        Train the classifier on a single iterable piece of data called

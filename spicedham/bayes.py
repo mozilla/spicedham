@@ -6,15 +6,12 @@ import re
 import json
 
 from spicedham.backend import Backend
-from spicedham.basepugin import BasePlugin
+from spicedham.baseplugin import BasePlugin
 
 class Bayes(BasePlugin):
     """
     A Bayesian classifier plugin
     """
-
-    def setup(self):
-        Backend.setup()
 
     def train(self, tag, result, is_spam):
         """
