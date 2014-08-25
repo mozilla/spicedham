@@ -86,6 +86,7 @@ def output_file(data, name):
 
 
 if __name__ == '__main__':
+    spicedham.load_plugins()
     print 'training...'
     train()
     print 'classifying...'
