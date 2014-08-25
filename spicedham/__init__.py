@@ -1,6 +1,7 @@
 from pkg_resources import iter_entry_points
 
 from spicedham.config import load_config
+from spicedham.backend import load_backend
 
 _plugins = None
 
@@ -10,6 +11,8 @@ def load_plugins():
     """
     global _plugins
     if _plugins == None:
+        # In order to use the plugins config and backend must be loaded.
+        load_backend()
         load_config()
         _plugins = []
         for plugin in iter_entry_points(group='spicedham.classifiers', name=None):
