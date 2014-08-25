@@ -1,6 +1,6 @@
 from itertools import repeat
 from spicedham.basewrapper import BaseWrapper
-from spicedham.config import config
+from spicedham.config import load_config
 from spicedham.baseplugin import BasePlugin
 
 class DigitDestroyer(BasePlugin):
@@ -12,6 +12,7 @@ class DigitDestroyer(BasePlugin):
         """
         Get values from the config.
         """
+        config = load_config()
         self.filter_match = config['digitdestroyer']['filter_match']
         self.filter_miss = config['digitdestroyer']['filter_miss']
 

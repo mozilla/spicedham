@@ -1,7 +1,7 @@
 import operator
 from itertools import imap, repeat
 
-from spicedham.config import config
+from spicedham.config import load_config
 from spicedham.backend import Backend
 from spicedham.baseplugin import BasePlugin
 
@@ -14,6 +14,7 @@ class NonsenseFilter(BasePlugin):
         """
         Get values from the config.
         """
+        config = load_config()
         self.filter_match = config['nonsensefilter']['filter_match']
         self.filter_miss = config['nonsensefilter']['filter_miss']
     

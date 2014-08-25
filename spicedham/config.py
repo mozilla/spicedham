@@ -1,8 +1,10 @@
 import json
 
-config = None
+_config = None
 
 def load_config():
-    if config == None:
+    global _config
+    if _config == None:
         f = open('spicedham-config.json', 'r')
-        config = json.load(f)
+        _config = json.load(f)
+    return _config
