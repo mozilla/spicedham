@@ -27,7 +27,7 @@ class DigitDestroyer(BasePlugin):
         If the responses consists entirely of numbers, return the filter_match
         value from the config file. Otherwise return filter_miss.
         """
-        if all(map(unicode.isdigit, unicode(response))):
+        if all(map(unicode.isdigit, map(unicode, response))):
             return self.filter_match
         else:
             return self.filter_miss
