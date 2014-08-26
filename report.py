@@ -11,12 +11,12 @@ THRESHHOLD = 0.5
 
 def test_on_training_data():
     print 'testing against the training data set'
-    test_on_data(os.path.join('corpus', 'train'))
+    test_file(os.path.join('corpus', 'train'))
 
 
-def test_on_control_data():
-    print 'testing against the control data set'
-    test_on_data(os.path.join('corpus', 'control'))
+def test_on_spam_data():
+    print 'testing against the spam data set'
+    test_file(os.path.join('corpus', 'spam'))
 
 def train_on_api_like_data(file_name):
     time_start = time.time()
@@ -28,11 +28,15 @@ def train_on_api_like_data(file_name):
         with open(file_name, 'r') as f:
             j = json.load(f)
         for result in j['results']:
-            if result['control']:
-                continue
+            #if result['control']:
+            #    continue
+            # We need this lambda to work nicely with unicodes and strs
             description = re.split('[ .,?!\n\r]', result['description'])
+            description = [ x for x in description if x != '' ]
+            lowerit = lambda stringy: stringy.lower()
+            description = map(lowerit, description)
             train_start = time.time()
-            sh.train(description, result['spam'])
+            sh.train('description', description, result['spam'])
             train_time += time.time() - train_start 
     else:
         print 'crowd corpus not found. continuing without it.'
@@ -52,7 +56,11 @@ def test_file(data_file_name):
         j = json.load(f)
         for resp in j['results']:
             test_results['Total'].append(resp['id'])
-            probability = sh.classify(re.split('[ \n\r.,?!]', resp['description']))
+            description = re.split('[ .,?!\n\r]', resp['description'])
+            description = [ x for x in description if x != '' ]
+            lowerit = lambda stringy: stringy.lower()
+            description = map(lowerit, description)
+            probability = sh.classify('description', description)
             if 0.0 > probability > 1.0:
                 test_results['Errors'].append(resp['id'])
             if probability > THRESHHOLD:
@@ -94,7 +102,7 @@ def test_on_api_data(url='https://input.mozilla.org/api/v1/feedback/?locales=en-
     numSpam = 0
     numTotal = resps['count']
     for resp in resps['results']:
-        probability = sh.classify([ x for x in re.split('[ \n\r.,?!]', resp['description']) if x != ''])
+        probability = sh.classify('descriptior',[ x for x in re.split('[ \n\r.,?!]', resp['description']) if x != ''])
         if probability > THRESHHOLD:
             numSpam += 1
             resp['spam'] = True
@@ -106,7 +114,7 @@ def test_on_api_data(url='https://input.mozilla.org/api/v1/feedback/?locales=en-
     json.dump(resps, f)
     print '{} api responses anaylzed.'.format(numTotal)
     print 'Tagged Spam: {} ({}%)'.format(numSpam, percent(numSpam, numTotal))
-    print 'Tagged Hpam: {} ({}%)'.format(numTotal - numSpam,
+    print 'Tagged Ham: {} ({}%)'.format(numTotal - numSpam,
         percent(numTotal - numSpam, numTotal))
 
 def test_on_sumo_data_from_mythmons_laptop(url='http://10.252.25.122:8900/api/1/questions?locale=en-US'):
@@ -115,7 +123,7 @@ def test_on_sumo_data_from_mythmons_laptop(url='http://10.252.25.122:8900/api/1/
     numSpam = 0
     numTotal = resps['count']
     for resp in resps['results']:
-        if not resp['control']:
+        if not resp['spam']:
             continue
         probability = sh.classify(re.split('[ \n\r.,?!]', resp['content']))
         if probability > THRESHHOLD:
@@ -129,12 +137,11 @@ def test_on_sumo_data_from_mythmons_laptop(url='http://10.252.25.122:8900/api/1/
     json.dump(resps, f)
     print '{} sumo api responses anaylzed.'.format(numTotal)
     print 'Tagged Spam: {} ({}%)'.format(numSpam, percent(numSpam, numTotal))
-    print 'Tagged Hpam: {} ({}%)'.format(numTotal - numSpam,
+    print 'Tagged Ham: {} ({}%)'.format(numTotal - numSpam,
         percent(numTotal - numSpam, numTotal))
 
 if __name__ == '__main__':
-    #train_on_api_like_data("jcorpus_new.json")
+    train_on_api_like_data("jcorpus_newest.json")
+    train_on_api_like_data("jcorpus_new.json")
     train_on_api_like_data("jcorpus.json")
-    #test_file('jcorpus.json')
-    test_file('jcorpus_new.json')
     test_on_api_data()
