@@ -31,6 +31,15 @@ class SqlAlchemyWrapper(BaseWrapper):
         except KeyError, e:
             raise EngineNotFoundError
 
+    def reset(self, really):
+        if really:
+            session = self.sessionFactory()
+            everything = session.query(Store).delete()
+            session.commit()
+        else:
+            pass
+
+
     def get_key(self, tag, key, default=None):
         """
         Gets the value held by the tag, key composite key. If it doesn't exist,
