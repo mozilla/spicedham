@@ -42,7 +42,7 @@ def process_user_agent(user_agent):
 
 def process_response(response):
     return filter(lambda x: x != '',
-                  re.split(' \n\r.,', response['description']))
+                  re.split(' \n\r.,', response['description'].lower()))
 
 
 def diff_against_previous(data, current_run_name):
