@@ -2,7 +2,7 @@ import operator
 from itertools import imap, repeat
 
 from spicedham.config import load_config
-from spicedham.backend import Backend
+from spicedham.backend import load_backend
 from spicedham.baseplugin import BasePlugin
 
 class NonsenseFilter(BasePlugin):
@@ -15,6 +15,7 @@ class NonsenseFilter(BasePlugin):
         Get values from the config.
         """
         config = load_config()
+        self.backend = load_backend()
         self.filter_match = config['nonsensefilter']['filter_match']
         self.filter_miss = config['nonsensefilter']['filter_miss']
     
@@ -32,7 +33,7 @@ class NonsenseFilter(BasePlugin):
         If the message contains only words not found in the database return
         filter_match. Else return filter_miss.
         """
-        list_in_dict = lambda x, y: not Backend.get_key(x, y, False)
+        list_in_dict = lambda x, y: not self.backend.get_key(x, y, False)
         if all(imap(list_in_dict, repeat(tag), response)):
             return self.filter_match
         else:

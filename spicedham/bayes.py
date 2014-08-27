@@ -5,7 +5,7 @@ from __future__ import division
 import re
 import json
 
-from spicedham.backend import Backend
+from spicedham.backend import load_backend
 from spicedham.baseplugin import BasePlugin
 
 class Bayes(BasePlugin):
@@ -13,29 +13,32 @@ class Bayes(BasePlugin):
     A Bayesian classifier plugin
     """
 
+    def __init__(self):
+        self.backend = load_backend()
+
     def train(self, tag, result, is_spam):
         """
         Train the database on result. result is a dict, is_spam is a bool
         """
         # * is a special key representing all results. This is kind of a hack.
-        total = Backend.get_key(tag, '*', {'numSpam': 0, 'numTotal': 0})
+        total = self.backend.get_key(tag, '*', {'numSpam': 0, 'numTotal': 0})
         results = []
         for item in set(result):
-            value = Backend.get_key(tag, item, {'numSpam': 0, 'numTotal': 0})
+            value = self.backend.get_key(tag, item, {'numSpam': 0, 'numTotal': 0})
             total['numTotal'] += 1
             value['numTotal'] += 1
             if is_spam:
                 total['numSpam'] += 1
                 value['numSpam'] += 1
             results.append((item, value))
-        Backend.set_key_list(tag, results)
-        Backend.set_key(tag, '*', total)
+        self.backend.set_key_list(tag, results)
+        self.backend.set_key(tag, '*', total)
 
     def classify(self, tag, response):
         """
         Get the probability that a response is spam. response is a list
         """
-        total = Backend.get_key(tag, '*')
+        total = self.backend.get_key(tag, '*')
         pSpam = total['numSpam'] / total['numTotal']
         # Since spam and ham are independant events
         pHam = 1.0 - pSpam
@@ -46,7 +49,7 @@ class Bayes(BasePlugin):
             # ignore reserved '*' or useless ''
             if description == '*' or description == '':
                 continue
-            word = Backend.get_key(tag, description, {'numTotal': 0, 'numSpam': 0})
+            word = self.backend.get_key(tag, description, {'numTotal': 0, 'numSpam': 0})
             # If there's no data on the word, ignore it
             if word['numTotal'] == 0 or  word['numSpam'] == 0:
                 continue

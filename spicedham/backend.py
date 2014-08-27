@@ -9,17 +9,18 @@ class BackendNotRecognizedException(Exception):
     """Possible backends are "sqlalchemy", "elasticsearch", and "djangoorm"""""
     pass
 
-Backend = None
+_backend = None
 
 def load_backend():
-    global Backend
+    global _backend
     config = load_config()
-    if Backend == None:
+    if _backend == None:
         if  config['backend'] == 'sqlalchemy':
-            Backend = SqlAlchemyWrapper()
+            _backend = SqlAlchemyWrapper()
         elif config['backend'] == 'elasticsearch':
-            Backend = ElasticSearchWrapper()
+            _backend = ElasticSearchWrapper()
         elif config['backend'] == 'djangoorm':
-            Backend = DjangoOrmWrapper()
+            _backend = DjangoOrmWrapper()
         else:
-            raise BackendNotRecognizedException
+            raise _backendNotRecognizedException
+    return _backend
