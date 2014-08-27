@@ -141,7 +141,8 @@ def test_on_sumo_data_from_mythmons_laptop(url='http://10.252.25.122:8900/api/1/
         percent(numTotal - numSpam, numTotal))
 
 if __name__ == '__main__':
+    sh.load_plugins()
     train_on_api_like_data("jcorpus_newest.json")
     train_on_api_like_data("jcorpus_new.json")
     train_on_api_like_data("jcorpus.json")
-    test_on_api_data()
+    #test_on_api_data()
