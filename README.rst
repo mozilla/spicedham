@@ -48,17 +48,16 @@ classify spam:
 	load_plugins()
 
 2. Train on data. The arguments are:
-	- Some tag so different kinds of data don't get mixed up
 	- A list of words or other strings which can be scanned for spamminess
 	- A boolean indicating whether a message is spam
 
 ::
 	from spicedham import train
-	train('user_message', ['I', 'love', 'firefox'], False)
-	train('user_message', ['SPAM!'], True)
+	train(['I', 'love', 'firefox'], False)
+	train(['SPAM!'], True)
 
-3. Classify some data. The first two arguments are the same as above:
+3. Classify some data.
 
 ::
 	from spicedham import classify
-	classify('user_message', ['maybe', 'I'm', 'spam', 'or', 'maybe', 'not'])
+	classify(['maybe', 'I'm', 'spam', 'or', 'maybe', 'not'])
