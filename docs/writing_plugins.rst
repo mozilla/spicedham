@@ -15,14 +15,11 @@ A plugin should implement a ``classify`` method and optionally a ``train``
 method.
 The ``classify`` method should take the following arguments:
 * ``self``: just like a normal python class method
-* ``tag``: A string tag used as part of a composite key to identify the type
-of response data. If your input data is json, it may be the json key
-identifing the data being classified.
 The ``classify`` method must return either a float between 0.0 and 1.0
 represtenting the probability that the classified data is spam, or the
 ``classify`` function may elect not to classify this message and return
 ``None``.
-The first three arguments of the ``train`` function are the same as the
+The first two arguments of the ``train`` function are the same as the
 ``classify`` function. In addition, ``train`` expects a bool argument
 ``is_spam`` indicating whether or not the provided data is spam. ``train``
 should not explicitly return anything.
@@ -122,7 +119,7 @@ probability, just None
 
 ::
 	...
-	def classify(self, tag, response):
+	def classify(self, response):
 		if self.word in response:
 			return 1.0
 		else:
