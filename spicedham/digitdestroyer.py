@@ -22,7 +22,7 @@ class DigitDestroyer(BasePlugin):
         """
         pass
 
-    def classify(self, tag, response):
+    def classify(self, response):
         """
         If the responses consists entirely of numbers, return the filter_match
         value from the config file. Otherwise return filter_miss.
