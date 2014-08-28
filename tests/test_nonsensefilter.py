@@ -13,6 +13,6 @@ class TestNonsenseFilter(TestCase):
         reverse = lambda x: x[::-1]
         match_message = map(reverse, ['supposedly', 'nonsense', 'words'])
         miss_message = ['Firefox']
-        self.assertEqual(nonsense.classify('tag', match_message), 1)
-        self.assertEqual(nonsense.classify('tag', miss_message), 0)
+        self.assertEqual(nonsense.classify(match_message), 1)
+        self.assertEqual(nonsense.classify(miss_message), 0)
 

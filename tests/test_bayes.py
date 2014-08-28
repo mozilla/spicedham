@@ -14,16 +14,15 @@ class TestBayes(TestCase):
         self._training(b)
         alphabet = map(chr, range(97, 123))
         for letter in alphabet:
-            p = b.classify('tag', letter)
+            p = b.classify(letter)
             self.assertEqual(p, 0.5)
 
     def _training(self, bayes):
-        tag = 'tag'
         alphabet = map(chr, range(97, 123))
         reversed_alphabet = reversed(alphabet)
         messagePairs = izip(alphabet, reversed_alphabet)
-        for tag, message, is_spam in izip(repeat(tag), messagePairs, cycle((True, False))):
-            bayes.train(tag, message, is_spam)
+        for message, is_spam in izip(messagePairs, cycle((True, False))):
+            bayes.train(message, is_spam)
 
         
 
@@ -34,6 +33,6 @@ class TestBayes(TestCase):
         b = Bayes()
         self._training(b)
         for letter in alphabet:
-            result = Backend.get_key('tag', letter)
+            result = Backend.get_key(b.__class__.__name__, letter)
             self.assertEqual(result, {'numTotal': 2, 'numSpam': 1})
             self.assertGreaterEqual(result['numTotal'], result['numSpam'])
