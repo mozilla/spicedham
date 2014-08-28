@@ -22,19 +22,18 @@ def train_on_file(file_name):
     with open(file_name, 'r') as f:
         data = json.load(f)
     for response in data['results']:
-        spicedham.train('description', process_response(response),
+        spicedham.train(process_response(response),
                         response['spam'])
-        spicedham.train('user_agent', process_response(response),
+        spicedham.train(process_response(response),
                         response['spam'])
 
 
 def classify():
     with open('responses.json', 'r') as f:
         responses = json.load(f)
-    return {(result['id'], spicedham.classify(tag,
+    return {(result['id'], spicedham.classify(
              process_response(result)))
-            for result in responses['results']
-            for tag in ['user_agent', 'description']}
+            for result in responses['results']}
 
 def process_user_agent(user_agent):
     return re.sub('[^A-Za-z]+', '', process_response(user_agent))
