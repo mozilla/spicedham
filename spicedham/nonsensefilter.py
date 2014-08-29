@@ -19,13 +19,11 @@ class NonsenseFilter(BasePlugin):
         self.filter_match = config['nonsensefilter']['filter_match']
         self.filter_miss = config['nonsensefilter']['filter_miss']
     
-    # TODO: This is a lie, training is necessary, just not besides the 
-    # training provided by the bayesian classifier.
     def train(self, response, value):
         """
-        No training necessary.
+        Set each word to True.
         """
-        pass
+        self.backend.set_key_list(self.__class__.__name__, {(word, True) for word in response})
 
     # TODO: Will match responses consisting of only ''
     def classify(self, response):
