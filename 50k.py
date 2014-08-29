@@ -1,6 +1,7 @@
 import os
 import re
 import json
+from itertools import imap
 from datetime import datetime
 from subprocess import check_output
 
@@ -40,8 +41,9 @@ def process_user_agent(user_agent):
 
 
 def process_response(response):
-    return filter(lambda x: x != '',
-                  re.split(' \n\r.,', response['description'].lower()))
+    split = re.split(' ', response['description'].lower())
+    f = filter(lambda x: x != '', split)
+    return f
 
 
 def diff_against_previous(data, current_run_name):
