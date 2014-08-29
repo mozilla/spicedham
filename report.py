@@ -28,15 +28,15 @@ def train_on_api_like_data(file_name):
         with open(file_name, 'r') as f:
             j = json.load(f)
         for result in j['results']:
-            #if result['control']:
-            #    continue
+            if result['control']:
+                continue
             # We need this lambda to work nicely with unicodes and strs
             description = re.split('[ .,?!\n\r]', result['description'])
             description = [ x for x in description if x != '' ]
             lowerit = lambda stringy: stringy.lower()
             description = map(lowerit, description)
             train_start = time.time()
-            sh.train('description', description, result['spam'])
+            sh.train(description, result['spam'])
             train_time += time.time() - train_start 
     else:
         print 'crowd corpus not found. continuing without it.'
@@ -60,7 +60,7 @@ def test_file(data_file_name):
             description = [ x for x in description if x != '' ]
             lowerit = lambda stringy: stringy.lower()
             description = map(lowerit, description)
-            probability = sh.classify('description', description)
+            probability = sh.classify(description)
             if 0.0 > probability > 1.0:
                 test_results['Errors'].append(resp['id'])
             if probability > THRESHHOLD:
@@ -102,7 +102,7 @@ def test_on_api_data(url='https://input.mozilla.org/api/v1/feedback/?locales=en-
     numSpam = 0
     numTotal = resps['count']
     for resp in resps['results']:
-        probability = sh.classify('descriptior',[ x for x in re.split('[ \n\r.,?!]', resp['description']) if x != ''])
+        probability = sh.classify([ x for x in re.split('[ \n\r.,?!]', resp['description']) if x != ''])
         if probability > THRESHHOLD:
             numSpam += 1
             resp['spam'] = True
@@ -145,4 +145,7 @@ if __name__ == '__main__':
     train_on_api_like_data("jcorpus_newest.json")
     train_on_api_like_data("jcorpus_new.json")
     train_on_api_like_data("jcorpus.json")
+    test_file("jcorpus_newest.json")
+    test_file("jcorpus_new.json")
+    test_file("jcorpus.json")
     #test_on_api_data()
