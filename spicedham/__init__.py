@@ -1,28 +1,49 @@
 from pkg_resources import iter_entry_points
 
-from spicedham.backend import load_backend
+from spicedham.config import load_config
 
-_plugins = None
+#TODO: wrap all of these in a threadsafe class
+_classifier_plugins = None
+_backend = None
 
 def load_plugins():
     """
     If not already loaded, load plugins.
     """
-    global _plugins
-    if _plugins == None:
+    global _classifier_plugins
+    if _classifier_plugins == None:
         # In order to use the plugins config and backend must be loaded.
+        _classifier_plugins = []
         load_backend()
-        _plugins = []
         for plugin in iter_entry_points(group='spicedham.classifiers', name=None):
             pluginClass = plugin.load()
-            _plugins.append(pluginClass())
+            _classifier_plugins.append(pluginClass())
 
+def load_backend():
+    global _backend
+    if _backend == None:
+        # If django is installed and the djangoorm plugin is registered, choose that
+        try:
+            import django
+            #TODO: This is ugly
+            djangoorm = iter_entry_points(group='spicedham.backends', name='djangoorm')
+            if djangoorm:
+                entry_point = next(djangoorm)
+                djangoOrmClass = entry_point.load()
+                _backend = djangoOrmClass()
+        # Else choose the first one
+        except ImportError:
+            #TODO: handle the case where no plugins are installed
+            #TODO: maybe we should pull the name from the config instead
+            plugin = next(iter_entry_points(group='spicedham.backends', name=None))
+            pluginClass =  plugin.load()
+    return _backend
 
 def train(training_data, is_spam):
     """
     Calls each plugin's train function.
     """
-    for plugin in _plugins:
+    for plugin in _classifier_plugins:
         plugin.train(training_data, is_spam)
 
 
@@ -32,7 +53,7 @@ def classify(classification_data):
     """
     average_score = 0
     total = 0
-    for plugin in _plugins:
+    for plugin in _classifier_plugins:
         value = plugin.classify(classification_data)
         # Skip _plugins which give a score of None
         if value != None:
