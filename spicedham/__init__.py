@@ -1,63 +1,74 @@
 from pkg_resources import iter_entry_points
 
-from spicedham.config import load_config
 
-#TODO: wrap all of these in a threadsafe class
-_classifier_plugins = None
-_backend = None
+class NoBackendFoundError(Exception):
+    pass
 
-def load_plugins():
-    """
-    If not already loaded, load plugins.
-    """
-    global _classifier_plugins
-    if _classifier_plugins == None:
+
+class Spicedham(object):
+
+    _classifier_plugins = []
+    backend = None
+    # Default config values
+    config = {
+        'backend': 'sqlalchemy',
+        'engine': 'sqlite:///:memory:',
+        'nonsensefilter': {'filter_match': 1, 'filter_miss': None},
+        'digitdestroyer': {'filter_match': 1, 'filter_miss': None},
+    }
+
+    def __init__(self):
+        """
+        Load config, backend, and plugins
+        """
+        self._load_config()
+        self._load_backend()
+        self._load_plugins()
+
+    def _load_plugins(self):
         # In order to use the plugins config and backend must be loaded.
-        _classifier_plugins = []
-        load_backend()
+        self._classifier_plugins = []
         for plugin in iter_entry_points(group='spicedham.classifiers', name=None):
             pluginClass = plugin.load()
-            _classifier_plugins.append(pluginClass())
+            self._classifier_plugins.append(pluginClass(self))
 
-def load_backend():
-    global _backend
-    if _backend == None:
-        #TODO: handle the case where no plugins are installed
+    def _load_backend(self):
         try:
-            # If the djangoorm plugin is registered, choose that
-            djangoorm = iter_entry_points(group='spicedham.backends',
-                name='djangoorm')
-            entry_point = next(djangoorm)
+            entry_point = iter_entry_points(group='spicedham.backends',
+                name=self.config['backend'])
+            entry_point = next(entry_point)
         except StopIteration:
-            # Else choose the first one
-            entry_point = next(iter_entry_points(group='spicedham.backends',
-                name=None))
+            raise NoBackendFoundError
         pluginClass = entry_point.load()
-        _backend = pluginClass()
-    return _backend
+        self.backend = pluginClass()
 
-def train(training_data, is_spam):
-    """
-    Calls each plugin's train function.
-    """
-    for plugin in _classifier_plugins:
-        plugin.train(training_data, is_spam)
+    def _load_config(self):
+        for config_plugin in iter_entry_points(group='spicedham.config', name=None):
+            config_plugin_obj = config_plugin.load()
+            for key in config_plugin_obj.keys():
+                config[key] = config_plugin_obj[key]
 
+    def train(self, training_data, is_spam):
+        """
+        Calls each plugin's train function.
+        """
+        for plugin in self._classifier_plugins:
+            plugin.train(training_data, is_spam)
 
-def classify(classification_data):
-    """
-    Calls each plugin's classify function and averages the results.
-    """
-    average_score = 0
-    total = 0
-    for plugin in _classifier_plugins:
-        value = plugin.classify(classification_data)
-        # Skip _plugins which give a score of None
-        if value != None:
-            total += 1
-            average_score += value
-    # On rare occasions no _plugins will give scores. If so, return 0
-    if total > 0:
-        return average_score / total
-    else:
-        return 0
+    def classify(self, classification_data):
+        """
+        Calls each plugin's classify function and averages the results.
+        """
+        average_score = 0
+        total = 0
+        for plugin in self._classifier_plugins:
+            value = plugin.classify(classification_data)
+            # Skip _plugins which give a score of None
+            if value != None:
+                total += 1
+                average_score += value
+        # On rare occasions no _plugins will give scores. If so, return 0
+        if total > 0:
+            return average_score / total
+        else:
+            return 0
