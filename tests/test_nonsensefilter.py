@@ -1,6 +1,6 @@
 from tests.test_classifierbase import TestClassifierBase
 
-from spicedham.backend import load_backend
+from spicedham import load_backend
 from spicedham.nonsensefilter import NonsenseFilter
 
 class TestNonsenseFilter(TestClassifierBase):

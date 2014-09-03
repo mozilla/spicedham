@@ -2,7 +2,7 @@ from unittest import TestCase
 from itertools import repeat, imap, izip, cycle
 
 from spicedham.bayes import Bayes
-from spicedham.backend import load_backend
+from spicedham import load_backend
 
 
 class TestBayes(TestCase):
