@@ -22,21 +22,18 @@ def load_plugins():
 def load_backend():
     global _backend
     if _backend == None:
-        # If django is installed and the djangoorm plugin is registered, choose that
+        #TODO: handle the case where no plugins are installed
         try:
-            import django
-            #TODO: This is ugly
-            djangoorm = iter_entry_points(group='spicedham.backends', name='djangoorm')
-            if djangoorm:
-                entry_point = next(djangoorm)
-                djangoOrmClass = entry_point.load()
-                _backend = djangoOrmClass()
-        # Else choose the first one
-        except ImportError:
-            #TODO: handle the case where no plugins are installed
-            #TODO: maybe we should pull the name from the config instead
-            plugin = next(iter_entry_points(group='spicedham.backends', name=None))
-            pluginClass =  plugin.load()
+            # If the djangoorm plugin is registered, choose that
+            djangoorm = iter_entry_points(group='spicedham.backends',
+                name='djangoorm')
+            entry_point = next(djangoorm)
+        except StopIteration:
+            # Else choose the first one
+            entry_point = next(iter_entry_points(group='spicedham.backends',
+                name=None))
+        pluginClass = entry_point.load()
+        _backend = pluginClass()
     return _backend
 
 def train(training_data, is_spam):
