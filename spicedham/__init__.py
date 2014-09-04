@@ -12,9 +12,7 @@ class Spicedham(object):
     # Default config values
     config = {
         'backend': 'sqlalchemy',
-        'engine': 'sqlite:///:memory:',
-        'nonsensefilter': {'filter_match': 1, 'filter_miss': None},
-        'digitdestroyer': {'filter_match': 1, 'filter_miss': None},
+        'engine': 'sqlite:///./spicedham.db',
     }
 
     def __init__(self):
