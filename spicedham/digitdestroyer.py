@@ -11,7 +11,7 @@ class DigitDestroyer(BasePlugin):
         """
         Get values from the config.
         """
-        digitdestroyer_config = spiced_ham.config['digitdestroyer']
+        digitdestroyer_config = spiced_ham.config.get('digitdestroyer', {})
         self.filter_match = digitdestroyer_config.get('filter_match', 1)
         self.filter_miss = digitdestroyer_config.get('filter_miss', None)
 
