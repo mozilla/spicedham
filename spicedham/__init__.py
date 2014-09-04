@@ -1,4 +1,3 @@
-from pkg_resources import iter_entry_points
 from baseplugin import BasePlugin
 from basewrapper import BaseWrapper
 from baseconfig import BaseConfig
@@ -38,14 +37,13 @@ class Spicedham(object):
     def _load_plugins(self):
         # In order to use the plugins config and backend must be loaded.
         self._classifier_plugins = []
-        #for plugin in iter_entry_points(group='spicedham.classifiers', name=None):
         for plugin_class in self.all_subclasses(BasePlugin):
             self._classifier_plugins.append(
                 plugin_class(self.config, self.backend))
 
     def _load_backend(self):
         try:
-            get_name = lambda x: True if x.__name__ == self.config['backend'] else False
+            get_name = lambda x: x.__name__ == self.config['backend']
             plugin_class = filter(get_name, self.all_subclasses(BaseWrapper))
             plugin_class = plugin_class[0]
         except IndexError:
@@ -55,7 +53,7 @@ class Spicedham(object):
     def _load_config(self):
         for config_plugin_obj in self.all_subclasses(BaseConfig):
             for key in config_plugin_obj.keys():
-                config[key] = config_plugin_obj[key]
+                self.config[key] = config_plugin_obj[key]
 
     def train(self, training_data, match):
         """
@@ -78,7 +76,7 @@ class Spicedham(object):
         for plugin in self._classifier_plugins:
             value = plugin.classify(classification_data)
             # Skip _plugins which give a score of None
-            if value != None:
+            if value is not None:
                 total += 1
                 average_score += value
         # On rare occasions no _plugins will give scores. If so, return 0
