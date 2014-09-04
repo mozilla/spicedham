@@ -36,7 +36,7 @@ class Spicedham(object):
                 name=self.config['backend'])
             entry_point = next(entry_point)
         except StopIteration:
-            raise NoBackendFoundError
+            raise NoBackendFoundError()
         pluginClass = entry_point.load()
         self.backend = pluginClass()
 
@@ -46,12 +46,12 @@ class Spicedham(object):
             for key in config_plugin_obj.keys():
                 config[key] = config_plugin_obj[key]
 
-    def train(self, training_data, is_spam):
+    def train(self, training_data, is_bad):
         """
         Calls each plugin's train function.
         """
         for plugin in self._classifier_plugins:
-            plugin.train(training_data, is_spam)
+            plugin.train(training_data, is_bad)
 
     def classify(self, classification_data):
         """
@@ -67,6 +67,6 @@ class Spicedham(object):
                 average_score += value
         # On rare occasions no _plugins will give scores. If so, return 0
         if total > 0:
-            return average_score / total
+            return float(average_score) / float(total)
         else:
             return 0
