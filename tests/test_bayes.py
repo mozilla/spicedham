@@ -2,15 +2,15 @@ from unittest import TestCase
 from itertools import repeat, imap, izip, cycle
 
 from spicedham.bayes import Bayes
-from spicedham import load_backend
+from spicedham import Spicedham
 
 
 class TestBayes(TestCase):
     
     def test_classify(self):
-        Backend = load_backend()
-        Backend.reset(True)
-        b = Bayes()
+        sh = Spicedham()
+        b = Bayes(sh)
+        b.backend.reset()
         self._training(b)
         alphabet = map(chr, range(97, 123))
         for letter in alphabet:
@@ -24,15 +24,13 @@ class TestBayes(TestCase):
         for message, is_spam in izip(messagePairs, cycle((True, False))):
             bayes.train(message, is_spam)
 
-        
-
     def test_train(self):
-        Backend = load_backend()
-        Backend.reset(True)
         alphabet = map(chr, range(97, 123))
-        b = Bayes()
+        sh = Spicedham()
+        b = Bayes(sh)
+        b.backend.reset()
         self._training(b)
         for letter in alphabet:
-            result = Backend.get_key(b.__class__.__name__, letter)
+            result = sh.backend.get_key(b.__class__.__name__, letter)
             self.assertEqual(result, {'numTotal': 2, 'numSpam': 1})
             self.assertGreaterEqual(result['numTotal'], result['numSpam'])
