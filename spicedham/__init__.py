@@ -46,16 +46,21 @@ class Spicedham(object):
             for key in config_plugin_obj.keys():
                 config[key] = config_plugin_obj[key]
 
-    def train(self, training_data, is_bad):
+    def train(self, training_data, match):
         """
         Calls each plugin's train function.
+        `training_data` is an iterable of strings. `match` is a boolean
+        indicating whether the training data should be matched.
+        For instance, if you're filtering spam `match` will be True for spam,
+        and False for a normal message.
         """
         for plugin in self._classifier_plugins:
-            plugin.train(training_data, is_bad)
+            plugin.train(training_data, match)
 
     def classify(self, classification_data):
         """
         Calls each plugin's classify function and averages the results.
+        `classification_data` is an iterable of strings.
         """
         average_score = 0
         total = 0
