@@ -7,11 +7,11 @@ class DigitDestroyer(BasePlugin):
     Filter all responses which consist of only numbers and no words.
     """
 
-    def __init__(self, spiced_ham):
+    def __init__(self, config, backend):
         """
         Get values from the config.
         """
-        digitdestroyer_config = spiced_ham.config.get('digitdestroyer', {})
+        digitdestroyer_config = config.get('digitdestroyer', {})
         self.filter_match = digitdestroyer_config.get('filter_match', 1)
         self.filter_miss = digitdestroyer_config.get('filter_miss', None)
 

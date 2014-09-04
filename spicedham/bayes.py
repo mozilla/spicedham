@@ -12,8 +12,8 @@ class Bayes(BasePlugin):
     A Bayesian classifier plugin
     """
 
-    def __init__(self, spiced_ham):
-        self.backend = spiced_ham.backend
+    def __init__(self, config, backend):
+        self.backend = backend
 
     def train(self, result, is_spam):
         """

@@ -2,7 +2,7 @@ class BasePlugin(object):
     """
     A base class for spicedham plugins.
     """
-    def __init__(self, spiced_ham_object):
+    def __init__(self, config, backend):
         pass
 
     def train(self, result, is_spam):
