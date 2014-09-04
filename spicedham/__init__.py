@@ -28,7 +28,8 @@ class Spicedham(object):
         self._classifier_plugins = []
         for plugin in iter_entry_points(group='spicedham.classifiers', name=None):
             pluginClass = plugin.load()
-            self._classifier_plugins.append(pluginClass(self))
+            self._classifier_plugins.append(
+                pluginClass(self.config, self.backend))
 
     def _load_backend(self):
         try:
