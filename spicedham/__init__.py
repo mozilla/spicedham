@@ -1,4 +1,10 @@
 from pkg_resources import iter_entry_points
+from baseplugin import BasePlugin
+from basewrapper import BaseWrapper
+from baseconfig import BaseConfig
+# Import for the side effect of getting access to subclasses
+# TODO: This is gross
+import gottaimportthemall
 
 
 class NoBackendFoundError(Exception):
@@ -11,9 +17,15 @@ class Spicedham(object):
     backend = None
     # Default config values
     config = {
-        'backend': 'sqlalchemy',
+        'backend': 'SqlAlchemyWrapper',
         'engine': 'sqlite:///./spicedham.db',
     }
+
+    def all_subclasses(self, cls):
+        subc = cls.__subclasses__()
+        for d in list(subc):
+            subc.extend(self.all_subclasses(d))
+        return subc
 
     def __init__(self):
         """
@@ -26,24 +38,22 @@ class Spicedham(object):
     def _load_plugins(self):
         # In order to use the plugins config and backend must be loaded.
         self._classifier_plugins = []
-        for plugin in iter_entry_points(group='spicedham.classifiers', name=None):
-            pluginClass = plugin.load()
+        #for plugin in iter_entry_points(group='spicedham.classifiers', name=None):
+        for plugin_class in self.all_subclasses(BasePlugin):
             self._classifier_plugins.append(
-                pluginClass(self.config, self.backend))
+                plugin_class(self.config, self.backend))
 
     def _load_backend(self):
         try:
-            entry_point = iter_entry_points(group='spicedham.backends',
-                name=self.config['backend'])
-            entry_point = next(entry_point)
-        except StopIteration:
+            get_name = lambda x: True if x.__name__ == self.config['backend'] else False
+            plugin_class = filter(get_name, self.all_subclasses(BaseWrapper))
+            plugin_class = plugin_class[0]
+        except IndexError:
             raise NoBackendFoundError()
-        pluginClass = entry_point.load()
-        self.backend = pluginClass()
+        self.backend = plugin_class()
 
     def _load_config(self):
-        for config_plugin in iter_entry_points(group='spicedham.config', name=None):
-            config_plugin_obj = config_plugin.load()
+        for config_plugin_obj in self.all_subclasses(BaseConfig):
             for key in config_plugin_obj.keys():
                 config[key] = config_plugin_obj[key]
 
