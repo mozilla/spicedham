@@ -5,7 +5,6 @@ from __future__ import division
 import re
 import json
 
-from spicedham import load_backend
 from spicedham.baseplugin import BasePlugin
 
 class Bayes(BasePlugin):
@@ -13,8 +12,8 @@ class Bayes(BasePlugin):
     A Bayesian classifier plugin
     """
 
-    def __init__(self):
-        self.backend = load_backend()
+    def __init__(self, spiced_ham):
+        self.backend = spiced_ham.backend
 
     def train(self, result, is_spam):
         """
