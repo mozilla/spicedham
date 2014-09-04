@@ -7,7 +7,7 @@ class TestNonsenseFilter(TestClassifierBase):
 
     def test_train(self):
         sh = Spicedham()
-        nonsense = NonsenseFilter(sh)
+        nonsense = NonsenseFilter(sh.config, sh.backend)
         alphabet = map(chr, range(97, 123))
         reversed_alphabet = reversed(alphabet)
         self._training(nonsense, alphabet, reversed_alphabet)
@@ -17,7 +17,7 @@ class TestNonsenseFilter(TestClassifierBase):
     
     def test_classify(self):
         sh = Spicedham()
-        nonsense = NonsenseFilter(sh)
+        nonsense = NonsenseFilter(sh.config, sh.backend)
         nonsense.filter_match = 1
         nonsense.filter_miss = 0
         alphabet = map(chr, range(97, 123))

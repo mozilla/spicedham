@@ -9,7 +9,7 @@ class TestBayes(TestCase):
     
     def test_classify(self):
         sh = Spicedham()
-        b = Bayes(sh)
+        b = Bayes(sh.config, sh.backend)
         b.backend.reset()
         self._training(b)
         alphabet = map(chr, range(97, 123))
@@ -27,7 +27,7 @@ class TestBayes(TestCase):
     def test_train(self):
         alphabet = map(chr, range(97, 123))
         sh = Spicedham()
-        b = Bayes(sh)
+        b = Bayes(sh.config, sh.backend)
         b.backend.reset()
         self._training(b)
         for letter in alphabet:
