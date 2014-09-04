@@ -14,8 +14,9 @@ class NonsenseFilter(BasePlugin):
         Get values from the config.
         """
         self.backend = spiced_ham.backend
-        self.filter_match = spiced_ham.config['nonsensefilter']['filter_match']
-        self.filter_miss = spiced_ham.config['nonsensefilter']['filter_miss']
+        nonsensefilter_config = spiced_ham.config['nonsensefilter']
+        self.filter_match = nonsensefilter_config.get('filter_match', 1)
+        self.filter_miss = nonsensefilter_config.get('filter_miss', None)
     
     def train(self, response, value):
         """

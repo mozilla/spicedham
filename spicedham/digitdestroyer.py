@@ -11,8 +11,9 @@ class DigitDestroyer(BasePlugin):
         """
         Get values from the config.
         """
-        self.filter_match = spiced_ham.config['digitdestroyer']['filter_match']
-        self.filter_miss = spiced_ham.config['digitdestroyer']['filter_miss']
+        digitdestroyer_config = spiced_ham.config['digitdestroyer']
+        self.filter_match = digitdestroyer_config.get('filter_match', 1)
+        self.filter_miss = digitdestroyer_config.get('filter_miss', None)
 
     def train(*args):
         """
