@@ -52,8 +52,9 @@ class Spicedham(object):
 
     def _load_config(self):
         for config_plugin_obj in self.all_subclasses(BaseConfig):
-            for key in config_plugin_obj.keys():
-                self.config[key] = config_plugin_obj[key]
+            confer = config_plugin_obj().load_config()
+            for key in confer.keys():
+                self.config[key] = confer[key]
 
     def train(self, training_data, match):
         """
