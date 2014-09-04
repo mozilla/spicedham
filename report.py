@@ -6,7 +6,7 @@ import requests
 import time
 from datetime import datetime
 
-import spicedham as sh
+from spicedham import Spicedham
 THRESHHOLD = 0.5
 
 def test_on_training_data():
@@ -141,7 +141,7 @@ def test_on_sumo_data_from_mythmons_laptop(url='http://10.252.25.122:8900/api/1/
         percent(numTotal - numSpam, numTotal))
 
 if __name__ == '__main__':
-    sh.load_plugins()
+    sh = Spicedham()
     train_on_api_like_data("jcorpus_newest.json")
     train_on_api_like_data("jcorpus_new.json")
     train_on_api_like_data("jcorpus.json")
