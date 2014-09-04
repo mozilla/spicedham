@@ -5,12 +5,11 @@ class BaseWrapper(object):
     A base class for backend plugins.
     """
 
-    def reset(self, really):
+    def reset(self):
         """
         Resets the training data to a blank slate.
         """
-        if really:
-            raise NotImplementedError()
+        raise NotImplementedError()
 
 
     def get_key(self, classifier, key, default=None):

@@ -31,13 +31,10 @@ class SqlAlchemyWrapper(BaseWrapper):
         except KeyError, e:
             raise EngineNotFoundError
 
-    def reset(self, really):
-        if really:
-            session = self.sessionFactory()
-            everything = session.query(Store).delete()
-            session.commit()
-        else:
-            pass
+    def reset(self):
+        session = self.sessionFactory()
+        everything = session.query(Store).delete()
+        session.commit()
 
 
     def get_key(self, classifier, key, default=None):
