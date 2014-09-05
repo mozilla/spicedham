@@ -1,9 +1,9 @@
-from baseplugin import BasePlugin
-from basebackend import BaseBackend
-from baseconfig import BaseConfig
+from spicedham.baseplugin import BasePlugin
+from spicedham.basebackend import BaseBackend
+from spicedham.baseconfig import BaseConfig
 # Import for the side effect of getting access to subclasses
 # TODO: This is gross
-import gottaimportthemall
+import spicedham.gottaimportthemall
 
 
 class NoBackendFoundError(Exception):
