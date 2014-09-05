@@ -1,6 +1,6 @@
 from itertools import izip, repeat
 
-class BaseWrapper(object):
+class BaseBackend(object):
     """
     A base class for backend plugins.
     """

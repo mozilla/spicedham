@@ -1,5 +1,5 @@
 from baseplugin import BasePlugin
-from basewrapper import BaseWrapper
+from basebackend import BaseBackend
 from baseconfig import BaseConfig
 # Import for the side effect of getting access to subclasses
 # TODO: This is gross
@@ -44,7 +44,7 @@ class Spicedham(object):
     def _load_backend(self):
         try:
             get_name = lambda x: x.__name__ == self.config['backend']
-            plugin_class = filter(get_name, self.all_subclasses(BaseWrapper))
+            plugin_class = filter(get_name, self.all_subclasses(BaseBackend))
             plugin_class = plugin_class[0]
         except IndexError:
             raise NoBackendFoundError()
