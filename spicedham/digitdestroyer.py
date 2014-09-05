@@ -1,6 +1,6 @@
 from itertools import repeat
-from spicedham.basebackend import BaseBackend
-from spicedham.baseplugin import BasePlugin
+from spicedham.backend import BaseBackend
+from spicedham.plugin import BasePlugin
 
 class DigitDestroyer(BasePlugin):
     """

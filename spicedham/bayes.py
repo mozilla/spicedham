@@ -5,7 +5,7 @@ from __future__ import division
 import re
 import json
 
-from spicedham.baseplugin import BasePlugin
+from spicedham.plugin import BasePlugin
 
 class Bayes(BasePlugin):
     """

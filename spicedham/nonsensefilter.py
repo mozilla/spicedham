@@ -1,7 +1,7 @@
 import operator
 from itertools import imap, repeat
 
-from spicedham.baseplugin import BasePlugin
+from spicedham.plugin import BasePlugin
 
 class NonsenseFilter(BasePlugin):
     """

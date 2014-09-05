@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import NoResultFound
 
-from spicedham.basebackend import BaseBackend
+from spicedham.backend import BaseBackend
 
 from models import Base
 from models import Store

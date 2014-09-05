@@ -1,6 +1,6 @@
-from spicedham.baseplugin import BasePlugin
-from spicedham.basebackend import BaseBackend
-from spicedham.baseconfig import BaseConfig
+from spicedham.plugin import BasePlugin
+from spicedham.backend import BaseBackend
+from spicedham.config import BaseConfig
 # Import for the side effect of getting access to subclasses
 # TODO: This is gross
 import spicedham.gottaimportthemall
