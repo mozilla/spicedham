@@ -5,6 +5,9 @@ class BaseWrapper(object):
     A base class for backend plugins.
     """
 
+    def __init__(self, config):
+        pass
+
     def reset(self):
         """
         Resets the training data to a blank slate.
