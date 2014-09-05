@@ -4,7 +4,6 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import NoResultFound
 
 from spicedham.basewrapper import BaseWrapper
-from spicedham.config import load_config
 
 from models import Base
 from models import Store
@@ -19,11 +18,10 @@ class EngineNotFoundError(Exception):
 
 class SqlAlchemyWrapper(BaseWrapper):
 
-    def __init__(self):
+    def __init__(self, config):
         """
         Create engine and session factory from config values.
         """
-        config = load_config()
         try:
             self.engine = create_engine(config['engine'])
             self.sessionFactory = sessionmaker(self.engine)
