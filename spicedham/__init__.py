@@ -28,7 +28,7 @@ class Spicedham(object):
 
     def __init__(self, config=None):
         """
-        Load config, backend, and plugins
+        Load backend, and plugins
         """
         if config is not None:
             self.config = config
