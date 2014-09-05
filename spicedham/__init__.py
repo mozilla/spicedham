@@ -48,7 +48,7 @@ class Spicedham(object):
             plugin_class = plugin_class[0]
         except IndexError:
             raise NoBackendFoundError()
-        self.backend = plugin_class()
+        self.backend = plugin_class(self.config)
 
     def _load_config(self):
         for config_plugin_obj in self.all_subclasses(BaseConfig):
