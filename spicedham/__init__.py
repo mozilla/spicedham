@@ -26,11 +26,12 @@ class Spicedham(object):
             subc.extend(self.all_subclasses(d))
         return subc
 
-    def __init__(self):
+    def __init__(self, config=None):
         """
         Load config, backend, and plugins
         """
-        self._load_config()
+        if config is not None:
+            self.config = config
         self._load_backend()
         self._load_plugins()
 
@@ -49,12 +50,6 @@ class Spicedham(object):
         except IndexError:
             raise NoBackendFoundError()
         self.backend = plugin_class(self.config)
-
-    def _load_config(self):
-        for config_plugin_obj in self.all_subclasses(BaseConfig):
-            confer = config_plugin_obj().load_config()
-            for key in confer.keys():
-                self.config[key] = confer[key]
 
     def train(self, training_data, match):
         """
