@@ -1,22 +1,23 @@
 from tests.test_classifierbase import TestClassifierBase
 
-from spicedham.backend import load_backend
 from spicedham.nonsensefilter import NonsenseFilter
+from spicedham import Spicedham
 
 class TestNonsenseFilter(TestClassifierBase):
 
     def test_train(self):
-        backend = load_backend()
-        nonsense = NonsenseFilter()
+        sh = Spicedham()
+        nonsense = NonsenseFilter(sh.config, sh.backend)
         alphabet = map(chr, range(97, 123))
         reversed_alphabet = reversed(alphabet)
         self._training(nonsense, alphabet, reversed_alphabet)
         for letter in alphabet:
             self.assertEqual(True,
-                backend.get_key(nonsense.__class__.__name__, letter))
+                sh.backend.get_key(nonsense.__class__.__name__, letter))
     
     def test_classify(self):
-        nonsense = NonsenseFilter()
+        sh = Spicedham()
+        nonsense = NonsenseFilter(sh.config, sh.backend)
         nonsense.filter_match = 1
         nonsense.filter_miss = 0
         alphabet = map(chr, range(97, 123))

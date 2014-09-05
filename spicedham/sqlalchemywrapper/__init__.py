@@ -3,8 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import NoResultFound
 
-from spicedham.basewrapper import BaseWrapper
-from spicedham.config import load_config
+from spicedham.backend import BaseBackend
 
 from models import Base
 from models import Store
@@ -17,13 +16,12 @@ class EngineNotFoundError(Exception):
     """There was no engine specified in the config"""
     pass
 
-class SqlAlchemyWrapper(BaseWrapper):
+class SqlAlchemyWrapper(BaseBackend):
 
-    def __init__(self):
+    def __init__(self, config):
         """
         Create engine and session factory from config values.
         """
-        config = load_config()
         try:
             self.engine = create_engine(config['engine'])
             self.sessionFactory = sessionmaker(self.engine)
@@ -31,13 +29,10 @@ class SqlAlchemyWrapper(BaseWrapper):
         except KeyError, e:
             raise EngineNotFoundError
 
-    def reset(self, really):
-        if really:
-            session = self.sessionFactory()
-            everything = session.query(Store).delete()
-            session.commit()
-        else:
-            pass
+    def reset(self):
+        session = self.sessionFactory()
+        everything = session.query(Store).delete()
+        session.commit()
 
 
     def get_key(self, classifier, key, default=None):

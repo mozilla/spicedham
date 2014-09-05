@@ -5,16 +5,15 @@ from __future__ import division
 import re
 import json
 
-from spicedham.backend import load_backend
-from spicedham.baseplugin import BasePlugin
+from spicedham.plugin import BasePlugin
 
 class Bayes(BasePlugin):
     """
     A Bayesian classifier plugin
     """
 
-    def __init__(self):
-        self.backend = load_backend()
+    def __init__(self, config, backend):
+        self.backend = backend
 
     def train(self, result, is_spam):
         """

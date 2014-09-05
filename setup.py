@@ -40,7 +40,10 @@ setup(
             'bayes = spicedham.bayes:Bayes', 
             'digit_destroyer = spicedham.digitdestroyer:DigitDestroyer',
             'nonsense_filter = spicedham.nonsensefilter:NonsenseFilter',
-            ]
+            ],
+        'spicedham.backends': [
+            'sqlalchemy = spicedham.sqlalchemywrapper:SqlAlchemyWrapper'
+        ]
     },
     license="MPL v2",
     zip_safe=True,

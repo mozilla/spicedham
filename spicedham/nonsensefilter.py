@@ -1,23 +1,21 @@
 import operator
 from itertools import imap, repeat
 
-from spicedham.config import load_config
-from spicedham.backend import load_backend
-from spicedham.baseplugin import BasePlugin
+from spicedham.plugin import BasePlugin
 
 class NonsenseFilter(BasePlugin):
     """
     Filter messages with no words in the database.
     """
 
-    def __init__(self):
+    def __init__(self, config, backend):
         """
         Get values from the config.
         """
-        config = load_config()
-        self.backend = load_backend()
-        self.filter_match = config['nonsensefilter']['filter_match']
-        self.filter_miss = config['nonsensefilter']['filter_miss']
+        self.backend = backend
+        nonsensefilter_config = config.get('nonsensefilter', {})
+        self.filter_match = nonsensefilter_config.get('filter_match', 1)
+        self.filter_miss = nonsensefilter_config.get('filter_miss', None)
     
     def train(self, response, value):
         """

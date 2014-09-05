@@ -1,20 +1,19 @@
 from itertools import repeat
-from spicedham.basewrapper import BaseWrapper
-from spicedham.config import load_config
-from spicedham.baseplugin import BasePlugin
+from spicedham.backend import BaseBackend
+from spicedham.plugin import BasePlugin
 
 class DigitDestroyer(BasePlugin):
     """
     Filter all responses which consist of only numbers and no words.
     """
 
-    def __init__(self):
+    def __init__(self, config, backend):
         """
         Get values from the config.
         """
-        config = load_config()
-        self.filter_match = config['digitdestroyer']['filter_match']
-        self.filter_miss = config['digitdestroyer']['filter_miss']
+        digitdestroyer_config = config.get('digitdestroyer', {})
+        self.filter_match = digitdestroyer_config.get('filter_match', 1)
+        self.filter_miss = digitdestroyer_config.get('filter_miss', None)
 
     def train(*args):
         """
