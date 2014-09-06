@@ -1,4 +1,8 @@
 import spicedham.bayes
 import spicedham.digitdestroyer
 import spicedham.nonsensefilter
-from spicedham.sqlalchemywrapper import SqlAlchemyWrapper
+
+try:
+    from spicedham.sqlalchemywrapper import SqlAlchemyWrapper
+except ImportError:
+    pass
