@@ -30,13 +30,8 @@ def train_on_api_like_data(file_name):
         for result in j['results']:
             if result['control']:
                 continue
-            # We need this lambda to work nicely with unicodes and strs
-            description = re.split('[ .,?!\n\r]', result['description'])
-            description = [ x for x in description if x != '' ]
-            lowerit = lambda stringy: stringy.lower()
-            description = map(lowerit, description)
             train_start = time.time()
-            sh.train(description, result['spam'])
+            sh.train(result['description'], result['spam'])
             train_time += time.time() - train_start 
     else:
         print 'crowd corpus not found. continuing without it.'
@@ -56,11 +51,7 @@ def test_file(data_file_name):
         j = json.load(f)
         for resp in j['results']:
             test_results['Total'].append(resp['id'])
-            description = re.split('[ .,?!\n\r]', resp['description'])
-            description = [ x for x in description if x != '' ]
-            lowerit = lambda stringy: stringy.lower()
-            description = map(lowerit, description)
-            probability = sh.classify(description)
+            probability = sh.classify(resp['description'])
             if 0.0 > probability > 1.0:
                 test_results['Errors'].append(resp['id'])
             if probability > THRESHHOLD:
