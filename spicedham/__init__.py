@@ -70,8 +70,9 @@ class Spicedham(object):
 
     def train(self, training_data, match):
         """
-        Calls each plugin's train function.
-        `training_data` is an iterable of strings. `match` is a boolean
+        Feeds `training_data` to the tokenizer and calls each plugin's train
+        function.
+        `training_data` a string. `match` is a boolean
         indicating whether the training data should be matched.
         For instance, if you're filtering spam `match` will be True for spam,
         and False for a normal message.
@@ -82,8 +83,9 @@ class Spicedham(object):
 
     def classify(self, classification_data):
         """
-        Calls each plugin's classify function and averages the results.
-        `classification_data` is an iterable of strings.
+        Feeds `classification_data` to the tokenizer, calls each plugin's
+        classify function, and averages the results.
+        `classification_data` a string.
         """
         classification_data = self.tokenizer.tokenize(classification_data)
         average_score = 0
