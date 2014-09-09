@@ -1,7 +1,6 @@
 from unittest import TestCase
 
 from spicedham import Spicedham, NoBackendFoundError
-from spicedham.sqlalchemywrapper import SqlAlchemyWrapper
 from mock import Mock, patch
 
 
@@ -33,7 +32,7 @@ class TestSpicedHam(TestCase):
         self.assertEqual(value, 0.625)
         # Test when all plugins return one
         plugin0obj.classify.return_value = None
-        plugin1obj.classify.return_value = None   
+        plugin1obj.classify.return_value = None
         value = sh.classify(['classifying', 'data'])
         self.assertEqual(value, 0)
 
@@ -59,16 +58,16 @@ class TestSpicedHam(TestCase):
         mock_all_subclasses.return_value = [plugin0, plugin1, plugin2]
         sh = Spicedham()
         # Test when some plugins return numbers and some return None
-        value = sh.train(['classifying', 'data'], True)
+        sh.train(['classifying', 'data'], True)
         self.assertTrue(plugin0obj.train.called)
         self.assertTrue(plugin1obj.train.called)
         self.assertTrue(plugin2obj.train.called)
 
-
     @patch('spicedham.Spicedham.all_subclasses')
     @patch('spicedham.Spicedham._load_backend')
     def test_load_plugins(self, mock_load_backend, mock_all_subclasses):
-        mock_load_backend = None
+        # Make _load_backend a Nop
+        mock_load_backend = Mock()  # noqa
         plugin0 = Mock()
         plugin1 = Mock()
         plugin2 = Mock()
@@ -78,7 +77,6 @@ class TestSpicedHam(TestCase):
         self.assertEqual(plugin0.called, True)
         self.assertEqual(plugin1.called, True)
         self.assertEqual(plugin2.called, True)
-        
 
     @patch('spicedham.Spicedham.all_subclasses')
     def test_load_backend(self, mock_all_subclasses):
@@ -98,12 +96,14 @@ class TestSpicedHam(TestCase):
         mock_all_subclasses.return_value = []
         self.assertRaises(NoBackendFoundError, sh._load_backend)
 
-
     def test_all_subclasses(self):
+
         class parent(object):
             pass
+
         class child0(parent):
             pass
+
         class child1(parent):
             pass
         sh = Spicedham()
