@@ -10,8 +10,5 @@ class SplitTokenizer(BaseTokenizer):
    
     def tokenize(self, text):
         text = split('[ ,.?!\n\r]', text)
-        is_not_blank = lambda x: x != ''
-        text = filter(is_not_blank, text)
-        lower_case = lambda x: x.lower()
-        text = map(lower_case, text)
+        text = [token.lower() for token in text if token]
         return text
