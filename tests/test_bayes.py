@@ -33,4 +33,4 @@ class TestBayes(TestCase):
         for letter in alphabet:
             result = sh.backend.get_key(b.__class__.__name__, letter)
             self.assertEqual(result, {'numTotal': 2, 'numSpam': 1})
-            self.assertGreaterEqual(result['numTotal'], result['numSpam'])
+            self.assertTrue(result['numTotal'] >= result['numSpam'])
