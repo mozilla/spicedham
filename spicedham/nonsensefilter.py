@@ -21,7 +21,7 @@ class NonsenseFilter(BasePlugin):
         """
         Set each word to True.
         """
-        self.backend.set_key_list(self.__class__.__name__, {(word, True) for word in response})
+        self.backend.set_key_list(self.__class__.__name__, set([(word, True) for word in response]))
 
     # TODO: Will match responses consisting of only ''
     def classify(self, response):
