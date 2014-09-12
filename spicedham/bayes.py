@@ -26,6 +26,8 @@ class Bayes(BasePlugin):
 
     def __init__(self, config, backend):
         self.backend = backend
+        logging.basicConfig(filename='sh_bayes_classifier.log',
+                            level=logging.DEBUG)
 
     def train(self, result, is_spam):
         """
@@ -73,7 +75,7 @@ class Bayes(BasePlugin):
                 continue
             # TODO: make an exception, not just an assert
             assert word['numTotal'] >= word['numSpam']
-            logging_message += 'The word is: ' + str(word)
+            logging_message += 'The word is: ' + description
             pWord = (word['numTotal'] / total['numTotal'])
             logging_message += ' The probability of the word is: ' + str(pWord)
             pWordGivenSpam = (word['numSpam']) / total['numSpam']
@@ -88,5 +90,4 @@ class Bayes(BasePlugin):
         p = ((pSpamGivenWord) / (pSpamGivenWord + pHamGivenWord))
         if p > 0.5:
             logging.debug(logging_message)
-            loggin_message += ' The probability of the ham given word is ' + str(pWordGivenHam)
         return (p)
