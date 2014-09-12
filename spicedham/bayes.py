@@ -26,6 +26,7 @@ class Bayes(BasePlugin):
 
     def __init__(self, config, backend):
         self.backend = backend
+        self.log = logging.getLogger('spicedham')
         logging.basicConfig(filename='sh_bayes_classifier.log',
                             level=logging.DEBUG)
 
@@ -62,7 +63,6 @@ class Bayes(BasePlugin):
         pHam = 1.0 - pSpam
         pSpamGivenWord = pSpam
         pHamGivenWord = pHam
-        logging_message = ''
         pWordList = []
         for description in set(response):
             # ignore reserved '*' or useless ''
@@ -75,19 +75,12 @@ class Bayes(BasePlugin):
                 continue
             # TODO: make an exception, not just an assert
             assert word['numTotal'] >= word['numSpam']
-            logging_message += 'The word is: ' + description
             pWord = (word['numTotal'] / total['numTotal'])
-            logging_message += ' The probability of the word is: ' + str(pWord)
             pWordGivenSpam = (word['numSpam']) / total['numSpam']
-            logging_message += ' The probability of the word given spam is ' + str(pWordGivenSpam)
             pWordGivenHam = (word['numTotal'] - word['numSpam']) / (total['numTotal'] - total['numSpam'])
-            logging_message += ' The probability of the word given ham is ' + str(pWordGivenHam)
             pSpamGivenWord *= (pWordGivenSpam) / pWord
-            logging_message += ' The probability of the spam given word is ' + str(pWordGivenSpam/pWord)
             pHamGivenWord *= pWordGivenHam / pWord
-            logging_message += ' The probability of the ham given word is ' + str(pWordGivenHam/pWord)
+            self.log.debug(u'word: {0} prob word: {1} prob spam: {2} prob spam: {3}'.format(unicode(description), unicode(pWord), unicode(pWordGivenSpam), unicode(pWordGivenHam), unicode(pWordGivenSpam/pWord), unicode(pWordGivenHam/pWord)))
 
         p = ((pSpamGivenWord) / (pSpamGivenWord + pHamGivenWord))
-        if p > 0.5:
-            logging.debug(logging_message)
         return (p)
