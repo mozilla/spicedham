@@ -71,16 +71,16 @@ def show_results(test_results):
     green = '\033[0;32m'
     nocolor = '\033[0m'
     print 'False negatives: ', test_results['False-']
-    print '{} responses analyzed'.format(len(test_results['Total']))
-    print 'True positives:  {} ({}%)'.format(len(test_results['True+']),
+    print '{0} responses analyzed'.format(len(test_results['Total']))
+    print 'True positives:  {0} ({1}%)'.format(len(test_results['True+']),
         percent(len(test_results['True+']), len(test_results['Total'])))
-    print 'False negatives: {} ({}%)'.format(len(test_results['False-']),
+    print 'False negatives: {0} ({1}%)'.format(len(test_results['False-']),
         percent(len(test_results['False-']), len(test_results['Total'])))
-    print 'True negatives:  {} ({}%)'.format(len(test_results['True-']),
+    print 'True negatives:  {0} ({1}%)'.format(len(test_results['True-']),
         percent(len(test_results['True-']), len(test_results['Total'])))
-    print 'False positives: {} ({}%)'.format(len(test_results['False+']),
+    print 'False positives: {0} ({1}%)'.format(len(test_results['False+']),
         percent(len(test_results['False+']), len(test_results['Total'])))
-    print 'Errors:          {} ({}%)'.format(len(test_results['Error']),
+    print 'Errors:          {0} ({1}%)'.format(len(test_results['Error']),
         percent(len(test_results['Error']), len(test_results['Total'])))
 
 def percent(numerator, denominator):
