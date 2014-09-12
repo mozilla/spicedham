@@ -4,6 +4,9 @@
 from __future__ import division
 import re
 import json
+import logging
+
+
 
 from spicedham.plugin import BasePlugin
 
@@ -57,6 +60,7 @@ class Bayes(BasePlugin):
         pHam = 1.0 - pSpam
         pSpamGivenWord = pSpam
         pHamGivenWord = pHam
+        logging_message = ''
         pWordList = []
         for description in set(response):
             # ignore reserved '*' or useless ''
@@ -69,11 +73,20 @@ class Bayes(BasePlugin):
                 continue
             # TODO: make an exception, not just an assert
             assert word['numTotal'] >= word['numSpam']
+            logging_message += 'The word is: ' + str(word)
             pWord = (word['numTotal'] / total['numTotal'])
+            logging_message += ' The probability of the word is: ' + str(pWord)
             pWordGivenSpam = (word['numSpam']) / total['numSpam']
+            logging_message += ' The probability of the word given spam is ' + str(pWordGivenSpam)
             pWordGivenHam = (word['numTotal'] - word['numSpam']) / (total['numTotal'] - total['numSpam'])
+            logging_message += ' The probability of the word given ham is ' + str(pWordGivenHam)
             pSpamGivenWord *= (pWordGivenSpam) / pWord
+            logging_message += ' The probability of the spam given word is ' + str(pWordGivenSpam/pWord)
             pHamGivenWord *= pWordGivenHam / pWord
+            logging_message += ' The probability of the ham given word is ' + str(pWordGivenHam/pWord)
 
         p = ((pSpamGivenWord) / (pSpamGivenWord + pHamGivenWord))
+        if p > 0.5:
+            logging.debug(logging_message)
+            loggin_message += ' The probability of the ham given word is ' + str(pWordGivenHam)
         return (p)
