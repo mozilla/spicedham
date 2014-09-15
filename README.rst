@@ -32,6 +32,12 @@ Run::
     # Create a virtualenvironment
     $ pip install -e .
 
+Running tests
+=============
+
+Run::
+    
+    nosetests
 
 Configuration
 =============
