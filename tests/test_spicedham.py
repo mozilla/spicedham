@@ -1,67 +1,113 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+from unittest import TestCase
 
-"""
-test_spicedham
-----------------------------------
-
-Tests for `spicedham` module.
-"""
-import os
-import json
-import tarfile
-import unittest
-
-from spicedham import SpicedHam
+from spicedham import Spicedham, NoBackendFoundError
+from mock import Mock, patch
 
 
-class TestSpicedham(unittest.TestCase):
+class TestSpicedHam(TestCase):
 
-    def setUp(self, tarball='corpus.tar.gz', test_data_dir='corpus'):
-        if os.path.exists(test_data_dir):
+    @patch('spicedham.Spicedham.all_subclasses')
+    def test_classify(self, mock_all_subclasses):
+        plugin0 = Mock()
+        plugin0obj = Mock()
+        plugin0.return_value = plugin0obj
+        plugin0.__name__ = "SqlAlchemyWrapper"
+        plugin0obj.classify.return_value = .5
+        plugin1 = Mock()
+        plugin1obj = Mock()
+        plugin1.return_value = plugin1obj
+        plugin1.__name__ = "NotSqlAlchemyWrapper"
+        plugin1obj.classify.return_value = .75
+        plugin2 = Mock()
+        plugin2obj = Mock()
+        plugin2.return_value = plugin2obj
+        plugin2.__name__ = "StillNotSqlAlchemyWrapper"
+        plugin2obj = Mock()
+        plugin2.return_value = plugin2obj
+        plugin2obj.classify.return_value = None
+        mock_all_subclasses.return_value = [plugin0, plugin1, plugin2]
+        sh = Spicedham()
+        # Test when some plugins return numbers and some return None
+        value = sh.classify(['classifying', 'data'])
+        self.assertEqual(value, 0.625)
+        # Test when all plugins return one
+        plugin0obj.classify.return_value = None
+        plugin1obj.classify.return_value = None
+        value = sh.classify(['classifying', 'data'])
+        self.assertEqual(value, 0)
+
+    @patch('spicedham.Spicedham.all_subclasses')
+    def test_train(self, mock_all_subclasses):
+        plugin0 = Mock()
+        plugin0obj = Mock()
+        plugin0.return_value = plugin0obj
+        plugin0.__name__ = "SqlAlchemyWrapper"
+        plugin0obj.classify.return_value = .5
+        plugin1 = Mock()
+        plugin1obj = Mock()
+        plugin1.return_value = plugin1obj
+        plugin1.__name__ = "NotSqlAlchemyWrapper"
+        plugin1obj.classify.return_value = .75
+        plugin2 = Mock()
+        plugin2obj = Mock()
+        plugin2.return_value = plugin2obj
+        plugin2.__name__ = "StillNotSqlAlchemyWrapper"
+        plugin2obj = Mock()
+        plugin2.return_value = plugin2obj
+        plugin2obj.classify.return_value = None
+        mock_all_subclasses.return_value = [plugin0, plugin1, plugin2]
+        sh = Spicedham()
+        # Test when some plugins return numbers and some return None
+        sh.train(['classifying', 'data'], True)
+        self.assertTrue(plugin0obj.train.called)
+        self.assertTrue(plugin1obj.train.called)
+        self.assertTrue(plugin2obj.train.called)
+
+    @patch('spicedham.Spicedham.all_subclasses')
+    @patch('spicedham.Spicedham._load_backend')
+    def test_load_plugins(self, mock_load_backend, mock_all_subclasses):
+        # Make _load_backend a Nop
+        mock_load_backend = Mock()  # noqa
+        plugin0 = Mock()
+        plugin1 = Mock()
+        plugin2 = Mock()
+        mock_all_subclasses.return_value = [plugin0, plugin1, plugin2]
+        sh = Spicedham()
+        sh._load_plugins()
+        self.assertEqual(plugin0.called, True)
+        self.assertEqual(plugin1.called, True)
+        self.assertEqual(plugin2.called, True)
+
+    @patch('spicedham.Spicedham.all_subclasses')
+    def test_load_backend(self, mock_all_subclasses):
+        backend0 = Mock()
+        backend0.__name__ = 'SqlAlchemyWrapper'
+        backend0Returns = Mock()
+        backend0.return_value = backend0Returns
+        backend1 = Mock()
+        backend1.__name__ = 'NotSqlAlchemyWrapper'
+        backend2 = Mock()
+        backend2.__name__ = 'StillNotSqlAlchemyWrapper'
+        mock_all_subclasses.return_value = [backend0, backend1, backend2]
+        sh = Spicedham()
+        sh._load_backend()
+        self.assertEqual(sh.backend, backend0Returns)
+        sh = Spicedham()
+        mock_all_subclasses.return_value = []
+        self.assertRaises(NoBackendFoundError, sh._load_backend)
+
+    def test_all_subclasses(self):
+
+        class parent(object):
             pass
-        elif os.path.exists(tarball):
-            tr = tarfile.open(tarball)
-            tr.extractall()
-            tr.close()
-        else:
-            raise 'No test data found'
-        self.sh = SpicedHam()
-        dir_name = os.path.join(test_data_dir, 'train', 'ham')
-        for file_name in os.listdir(dir_name):
-            data = json.load(open(os.path.join(dir_name, file_name)))
-            self.sh.train(data, False)
-        dir_name = os.path.join(test_data_dir, 'train', 'spam')
-        for file_name in os.listdir(dir_name):
-            data = json.load(open(os.path.join(dir_name, file_name)))
-            self.sh.train(data, True)
 
+        class child0(parent):
+            pass
 
-    def test_on_training_data(self, test_data_dir='corpus'):
-        self._test_all_files_in_dir(
-            os.path.join(test_data_dir, 'train', 'spam'), True)
-        self._test_all_files_in_dir(
-            os.path.join(test_data_dir, 'train', 'ham'), False)
-
-    def test_on_control_data(self, test_data_dir='corpus'):
-        self._test_all_files_in_dir(
-            os.path.join(test_data_dir, 'control', 'spam'), True)
-        self._test_all_files_in_dir(
-            os.path.join(test_data_dir, 'control', 'ham'), False)
-
-    def _test_all_files_in_dir(self, data_dir, should_be_spam):
-        tuning_factor = 0.5
-        for filename in os.listdir(data_dir):
-            f = open(os.path.join(data_dir,  filename), 'r')
-            json_response = json.load(f)
-            probability = self.sh.is_spam(json_response)
-            print probability
-            self.assertGreaterEqual(probability, 0.0)
-            self.assertLessEqual(probability, 1.0)
-            if should_be_spam:
-                self.assertGreaterEqual(tuning_factor, 0.5)
-            else:
-                self.assertLessEqual(tuning_factor, 0.5)
-
-if __name__ == '__main__':
-    unittest.main()
+        class child1(parent):
+            pass
+        sh = Spicedham()
+        result = sh.all_subclasses(parent)
+        self.assertIn(child0, result)
+        self.assertIn(child1, result)
+        self.assertEqual(2, len(result))
