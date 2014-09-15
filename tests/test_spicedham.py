@@ -108,6 +108,6 @@ class TestSpicedHam(TestCase):
             pass
         sh = Spicedham()
         result = sh.all_subclasses(parent)
-        self.assertTrue(child0 in result)
-        self.assertTrue(child1 in result)
+        self.assertIn(child0, result)
+        self.assertIn(child1, result)
         self.assertEqual(2, len(result))
