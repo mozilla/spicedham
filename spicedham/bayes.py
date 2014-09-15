@@ -39,7 +39,7 @@ class Bayes(BasePlugin):
     def classify(self, response):
         """
         Get the probability that a response is spam. response is a list.
-        Raise NotYetTrainedError if the class`
+        Raise value error if the classifier has not yet been trained.
         """
         total = self.backend.get_key(self.__class__.__name__, '*')
         if total == None:
