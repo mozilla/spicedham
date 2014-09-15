@@ -6,6 +6,7 @@ import re
 import json
 
 from spicedham.plugin import BasePlugin
+from spicedham import NotYetTrainedError
 
 class Bayes(BasePlugin):
     """
@@ -37,9 +38,12 @@ class Bayes(BasePlugin):
 
     def classify(self, response):
         """
-        Get the probability that a response is spam. response is a list
+        Get the probability that a response is spam. response is a list.
+        Raise NotYetTrainedError if the class`
         """
         total = self.backend.get_key(self.__class__.__name__, '*')
+        if total == None:
+            raise ValueError("The classifier has not yet been trained.")
         pSpam = total['numSpam'] / total['numTotal']
         # Since spam and ham are independant events
         pHam = 1.0 - pSpam
