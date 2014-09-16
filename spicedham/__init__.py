@@ -1,5 +1,6 @@
 from spicedham.plugin import BasePlugin
 from spicedham.backend import BaseBackend
+from spicedham.tokenizer import BaseTokenizer
 from spicedham.config import BaseConfig
 # Import for the side effect of getting access to subclasses
 # TODO: This is gross
@@ -10,14 +11,20 @@ class NoBackendFoundError(Exception):
     pass
 
 
+class NoTokenizerFoundError(Exception):
+    pass
+
+
 class Spicedham(object):
 
     _classifier_plugins = []
     backend = None
+    tokenizer = None
     # Default config values
     config = {
         'backend': 'SqlAlchemyWrapper',
         'engine': 'sqlite:///./spicedham.db',
+        'tokenizer': 'SplitTokenizer',
     }
 
     def all_subclasses(self, cls):
@@ -34,6 +41,7 @@ class Spicedham(object):
             self.config = config
         self._load_backend()
         self._load_plugins()
+        self._load_tokenizer()
 
     def _load_plugins(self):
         # In order to use the plugins config and backend must be loaded.
@@ -51,22 +59,35 @@ class Spicedham(object):
             raise NoBackendFoundError()
         self.backend = plugin_class(self.config)
 
+    def _load_tokenizer(self):
+        try:
+            get_name = lambda x: x.__name__ == self.config['tokenizer']
+            tokenizer_class = filter(get_name, self.all_subclasses(BaseTokenizer))
+            tokenizer_class = tokenizer_class[0]
+        except IndexError:
+            raise NoTokenizerFoundError()
+        self.tokenizer = tokenizer_class(self.config)
+
     def train(self, training_data, match):
         """
-        Calls each plugin's train function.
-        `training_data` is an iterable of strings. `match` is a boolean
+        Feeds `training_data` to the tokenizer and calls each plugin's train
+        function.
+        `training_data` a string. `match` is a boolean
         indicating whether the training data should be matched.
         For instance, if you're filtering spam `match` will be True for spam,
         and False for a normal message.
         """
+        training_data = self.tokenizer.tokenize(training_data)
         for plugin in self._classifier_plugins:
             plugin.train(training_data, match)
 
     def classify(self, classification_data):
         """
-        Calls each plugin's classify function and averages the results.
-        `classification_data` is an iterable of strings.
+        Feeds `classification_data` to the tokenizer, calls each plugin's
+        classify function, and averages the results.
+        `classification_data` a string.
         """
+        classification_data = self.tokenizer.tokenize(classification_data)
         average_score = 0
         total = 0
         for plugin in self._classifier_plugins:
