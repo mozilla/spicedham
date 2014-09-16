@@ -1,4 +1,4 @@
-from re import split
+import re
 
 from spicedham.tokenizer import BaseTokenizer
 
@@ -9,6 +9,6 @@ class SplitTokenizer(BaseTokenizer):
     """
    
     def tokenize(self, text):
-        text = split('[ ,.?!\n\r]', text)
+        text = re.split('[ ,.?!\n\r]', text)
         text = [token.lower() for token in text if token]
         return text
