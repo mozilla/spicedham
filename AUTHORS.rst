@@ -11,4 +11,5 @@ Development Lead
 Contributors
 ============
 
+* Will Khan-Greene
 None yet. Why not be the first?
