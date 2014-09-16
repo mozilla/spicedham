@@ -7,6 +7,15 @@ import json
 
 from spicedham.plugin import BasePlugin
 
+
+class NotYetTrainedError(Exception):
+    """
+    Raise this error if a classifier's classify method is called but is has not
+    yet been trained.
+    """
+    pass
+
+
 class Bayes(BasePlugin):
     """
     A Bayesian classifier plugin
@@ -37,9 +46,12 @@ class Bayes(BasePlugin):
 
     def classify(self, response):
         """
-        Get the probability that a response is spam. response is a list
+        Get the probability that a response is spam. response is a list.
+        Raise NotYetTrainedError if the classifier has not yet been trained.
         """
         total = self.backend.get_key(self.__class__.__name__, '*')
+        if total == None:
+            raise NotYetTrainedError()
         pSpam = total['numSpam'] / total['numTotal']
         # Since spam and ham are independant events
         pHam = 1.0 - pSpam
