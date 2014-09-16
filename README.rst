@@ -30,14 +30,21 @@ Run::
     $ git clone https://github.com/mozilla/spicedham
 
     # Create a virtualenvironment
+    $ virtualenv ../venv
+    $ source ../venv/bin/activate
+    # Install dependencies
+    $ pip install -r requirements.txt
+    # Install the code
     $ pip install -e .
 
 Running tests
 =============
 
-Run::
+Run:
+
+::
     
-    nosetests
+    $ nosetests
 
 Configuration
 =============
@@ -51,27 +58,37 @@ API
 The API for spicedham is simple. There are three steps you need to do to
 classify spam:
 
-1. Load the plugins:
+1. Instantiate a SpicedHam object:
 
-   :: 
+    ::
 
-       from spicedham import load_plugins
-       load_plugins()
+        from spicedham import SpicedHam
+        spicedham = SpicedHam()
+
+    Optionally you can pass dictionary of configuration values like so:
+
+    ::
+
+        config = {
+            'backend': 'SqlAlchemyWrapper', # The class name of your backend
+            'engine': 'sqlite:///:memory:', # Needed by SqlAlchemyWrapper
+            'tokenizer': 'SplitTokenizer',  # The class name of your tokenizer
+        }
+        spicedham = SpicecHam(config)
 
 2. Train on data. The arguments are:
 
-   * A list of words or other strings which can be scanned for spamminess
-   * A boolean indicating whether a message is spam
+   * A string message which can be split up by your chosen tokenizer.
+   * A boolean indicating whether classifiers should match the message
 
    ::
 
-       from spicedham import train
-       train(['I', 'love', 'firefox'], False)
-       train(['SPAM!'], True)
+       spicedham.train('I love Firefox!', False)
+       spicedham.train('SPAMMY NONSENSE AND HATE SPEECH!', True)
 
-3. Classify some data.
+3. Classify some data. ``chance_matched`` is a probability that the message was
+   what you're searching for and will be between 0 and 1 (inclusive).
 
    ::
 
-       from spicedham import classify
-       classify(['maybe', 'I'm', 'spam', 'or', 'maybe', 'not'])
+       chance_matched = spicedham.classify('maybe I'm spam or maybe not'])
