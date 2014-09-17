@@ -91,4 +91,4 @@ classify spam:
 
    ::
 
-       chance_matched = spicedham.classify('maybe I'm spam or maybe not'])
+       chance_matched = spicedham.classify('maybe I'm spam or maybe not')
