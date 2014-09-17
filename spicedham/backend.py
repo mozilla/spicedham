@@ -41,8 +41,7 @@ class BaseBackend(object):
         requests.
         """
         return [self.set_key(classifier, key, value)
-                for classifier, key, value
-                in izip(repeat(classifier), key_value_pairs)]
+                for key, value in key_value_pairs]
 
 
     def set_key(self, classifier, key, value):
