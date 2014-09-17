@@ -8,13 +8,6 @@ from spicedham.backend import BaseBackend
 from models import Base
 from models import Store
 
-# TODO: not necessary
-class EngineNotRecognizedError(Exception):
-    pass
-
-class EngineNotFoundError(Exception):
-    """There was no engine specified in the config"""
-    pass
 
 class SqlAlchemyWrapper(BaseBackend):
 
@@ -22,12 +15,10 @@ class SqlAlchemyWrapper(BaseBackend):
         """
         Create engine and session factory from config values.
         """
-        try:
-            self.engine = create_engine(config['engine'])
-            self.sessionFactory = sessionmaker(self.engine)
-            Base.metadata.create_all(self.engine)
-        except KeyError, e:
-            raise EngineNotFoundError
+        self.engine = create_engine(config.get('engine',
+                                    'sqlite:///./db.sqlite'))
+        self.sessionFactory = sessionmaker(self.engine)
+        Base.metadata.create_all(self.engine)
 
     def reset(self):
         session = self.sessionFactory()
