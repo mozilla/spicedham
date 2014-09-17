@@ -26,7 +26,12 @@ class DigitDestroyer(BasePlugin):
         If the responses consists entirely of numbers, return the filter_match
         value from the config file. Otherwise return filter_miss.
         """
+        return self.explain(response)[0]
+
+    def explain(self, response):
         if all(map(unicode.isdigit, map(unicode, response))):
-            return self.filter_match
+            return self.filter_match, 'The message consists entirely of\
+                numbers'
         else:
-            return self.filter_miss
+            return self.filter_miss, 'The message does not consist entirely of\
+            numbers'
