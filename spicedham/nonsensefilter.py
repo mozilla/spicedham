@@ -32,6 +32,11 @@ class NonsenseFilter(BasePlugin):
         return self.explain(response)[0]
 
     def explain(self, response):
+        """
+        If the message contains only words not found in the database return
+        filter_match and a string expanation. Else return filter_miss and a
+        string explanation.
+        """
         classifier = self.__class__.__name__
         list_in_dict = lambda x, y: not self.backend.get_key(x, y, False)
         if all(imap(list_in_dict, repeat(classifier), response)):

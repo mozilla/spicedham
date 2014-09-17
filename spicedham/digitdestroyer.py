@@ -29,6 +29,11 @@ class DigitDestroyer(BasePlugin):
         return self.explain(response)[0]
 
     def explain(self, response):
+        """
+        If the responses consists entirely of numbers, return the filter_match
+        value from the config and a string explanation. Otherwise return
+        filter_miss and a string explanation.
+        """
         if all(map(unicode.isdigit, map(unicode, response))):
             return self.filter_match, 'The message consists entirely of\
                 numbers'
