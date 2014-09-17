@@ -1,18 +1,11 @@
 import json
 from unittest import TestCase
 
-from spicedham.sqlalchemywrapper import SqlAlchemyWrapper, EngineNotFoundError
+from spicedham.sqlalchemywrapper import SqlAlchemyWrapper
 from spicedham.sqlalchemywrapper.models import Store
 
 
 class TestSqlAlchemyWrapper(TestCase):
-
-    def test_no_config(self):
-        """
-        Making a new SqlAlchemyWrapper without specifying a backend should
-        raise an EngineNotFoundError.
-        """
-        self.assertRaises(EngineNotFoundError, SqlAlchemyWrapper, {})
 
     def test_reset(self):
         sqlalchemy = SqlAlchemyWrapper({'engine': 'sqlite:///:memory:'})
