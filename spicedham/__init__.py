@@ -101,3 +101,21 @@ class Spicedham(object):
             return float(average_score) / float(total)
         else:
             return 0
+
+    def explain(self, classification_data):
+        classification_data = self.tokenizer.tokenize(classification_data)
+        average_score = 0
+        total = 0
+        explanations = []
+        for plugin in self._classifier_plugins:
+            value, explanation = plugin.explain(classification_data)
+            explanations.append(explanation)
+            # Skip _plugins which give a score of None
+            if value is not None:
+                total += 1
+                average_score += value
+        # On rare occasions no _plugins will give scores. If so, return 0
+        if total > 0:
+            return (float(average_score) / float(total), explanations)
+        else:
+            return (0, explanations)
