@@ -16,17 +16,17 @@ for these plugin types are:
 * ``spicedham.backend.BaseBackend``
 * ``spicedham.tokenizer.BaseTokenizer``
 
-Plugins will be loaded when a ``SpicedHam`` object is instantiated.
-Before instantiating a ``SpicedHam`` object your plugin must be imported.
-Even if the code calling ``SpicedHam`` does not use the plugin it must import
-it so ``SpicedHam`` can find the plugin.
+Plugins will be loaded when a ``Spicedham`` object is instantiated.
+Before instantiating a ``Spicedham`` object your plugin must be imported.
+Even if the code calling ``Spicedham`` does not use the plugin it must import
+it so ``Spicedham`` can find the plugin.
 
 ::
 
     from a_plugin import APlugin # noqa
     from spicedham import Spicedham
     # Now spicedham can use your plugin
-    sh = SpicedHam()
+    sh = Spicedham()
 
 It may be useful to specify ``# noqa`` so flake8 and similar tools do not
 complain.
