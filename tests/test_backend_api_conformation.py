@@ -1,28 +1,86 @@
 from unittest import TestCase
 
+from nose.exc import SkipTest
+
 from spicedham import Spicedham
 from spicedham.backend import BaseBackend
 from spicedham.dictwrapper import DictWrapper
+
+
 try:
     from spicedham.sqlalchemywrapper import SqlAlchemyWrapper
-except ImportError as e:
-    print 'SqlAlchemy was not installed. Will not test SqlAlchemyWrapper'    
+except ImportError:
+    pass
 
 
 try:
     from spicedham.rediswrapper import RedisWrapper
-except ImportError as e:
-    print 'Redis was not installed. Will not test RedisWrapper'    
+except ImportError:
+    pass
 
 
-def test_all_subclasses():
-    sh = Spicedham()
-    all_subclasses = sh.all_subclasses
-    for subclass in all_subclasses(BaseBackend):
-        sub_obj = subclass({'engine': 'sqlite:///./db.sqlite'})
-        yield _test_subclass_reset, sub_obj
-        yield _test_subclass_set_and_get, sub_obj
-        yield _test_subclass_set_list_and_get_list, sub_obj
+class TestRedisWrapperAPIConformation(TestCase):
+
+    def setUp(self):
+        try:
+            import redis
+            try:
+                # Open a connection and check that there's a reachable
+                # redis server on localhost
+                r = redis.Redis()
+                r.ping()
+            except redis.ConnectionError:
+                raise SkipTest('No Redis server on localhost')
+        except ImportError:
+            raise SkipTest('Redis not installed')
+
+    def test_reset(self):
+        r = RedisWrapper({})
+        _test_subclass_reset(r)
+
+    def test_set_and_get(self):
+        r = RedisWrapper({})
+        _test_subclass_set_and_get(r)
+
+    def test_set_list_and_get_list(self):
+        r = RedisWrapper({})
+        _test_subclass_set_list_and_get_list(r)
+
+
+class TestSqlAlchemyWrapperAPIConformation(TestCase):
+
+    def setUp(self):
+        try:
+            import sqlalchemy
+        except ImportError:
+            raise SkipTest('SqlAlchemy not installed')
+
+    def test_reset(self):
+        r =  SqlAlchemyWrapper({})
+        _test_subclass_reset(r)
+
+    def test_set_and_get(self):
+        r =  SqlAlchemyWrapper({})
+        _test_subclass_set_and_get(r)
+
+    def test_set_list_and_get_list(self):
+        r =  SqlAlchemyWrapper({})
+        _test_subclass_set_list_and_get_list(r)
+
+
+class TestDictWrapperAPIConformation(TestCase):
+
+    def test_reset(self):
+        r = DictWrapper({})
+        _test_subclass_reset(r)
+
+    def test_set_and_get(self):
+        r = DictWrapper({})
+        _test_subclass_set_and_get(r)
+
+    def test_set_list_and_get_list(self):
+        r = DictWrapper({})
+        _test_subclass_set_list_and_get_list(r)
 
 def _test_subclass_reset(subclass):
     key0 = 'key0'
