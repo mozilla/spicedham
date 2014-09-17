@@ -103,6 +103,13 @@ class Spicedham(object):
             return 0
 
     def explain(self, classification_data):
+        """
+        Feeds `classification_data` to the tokenizer, calls each plugin's
+        classify function, and averages the results. Also builds a list of
+        string/unicode explanations of how those results were achieved.
+        Returns a tuple of the float score and the list of explanations.
+        `classification_data` a string.
+        """
         classification_data = self.tokenizer.tokenize(classification_data)
         average_score = 0
         total = 0
