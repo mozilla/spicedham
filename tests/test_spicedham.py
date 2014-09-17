@@ -25,6 +25,29 @@ class TestSpicedHam(TestCase):
         value = sh.classify('classification data')
         self.assertEqual(value, 0)
 
+    def test_explain(self):
+        plugin0 = Mock()
+        plugin1 = Mock()
+        plugin2 = Mock()
+        plugin0.explain.return_value = None, 'test'
+        plugin1.explain.return_value = .5, 'test'
+        plugin2.explain.return_value = .75, 'test'
+        mock_classifier_plugins = [plugin0, plugin1, plugin2]
+        sh = Spicedham()
+        sh._classifier_plugins = mock_classifier_plugins
+        # Test when some plugins return numbers and some return None
+        value, explanation = sh.explain('classification data')
+        self.assertEqual(value, 0.625)
+        self.assertEqual(type(explanation), list)
+        self.assertEqual(len(explanation), 3)
+        # Test when all plugins return one
+        plugin1.explain.return_value = None, 'test'
+        plugin2.explain.return_value = None, 'test'
+        value, explanation = sh.explain('classification data')
+        self.assertEqual(type(explanation), list)
+        self.assertEqual(len(explanation), 3)
+        self.assertEqual(value, 0)
+
     def test_train(self):
         plugin0 = Mock()
         plugin1 = Mock()
