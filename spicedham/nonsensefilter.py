@@ -1,7 +1,7 @@
-import operator
 from itertools import imap, repeat
 
 from spicedham.plugin import BasePlugin
+
 
 class NonsenseFilter(BasePlugin):
     """
@@ -16,12 +16,13 @@ class NonsenseFilter(BasePlugin):
         nonsensefilter_config = config.get('nonsensefilter', {})
         self.filter_match = nonsensefilter_config.get('filter_match', 1)
         self.filter_miss = nonsensefilter_config.get('filter_miss', None)
-    
+
     def train(self, response, value):
         """
         Set each word to True.
         """
-        self.backend.set_key_list(self.__class__.__name__, set([(word, True) for word in response]))
+        self.backend.set_key_list(self.__class__.__name__,
+                                  set([(word, True) for word in response]))
 
     def explain(self, response):
         """
