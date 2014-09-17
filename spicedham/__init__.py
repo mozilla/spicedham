@@ -1,10 +1,9 @@
 from spicedham.plugin import BasePlugin
 from spicedham.backend import BaseBackend
 from spicedham.tokenizer import BaseTokenizer
-from spicedham.config import BaseConfig
 # Import for the side effect of getting access to subclasses
 # TODO: This is gross
-import spicedham.gottaimportthemall
+import spicedham.gottaimportthemall  # noqa
 
 
 class NoBackendFoundError(Exception):
@@ -62,7 +61,8 @@ class Spicedham(object):
     def _load_tokenizer(self):
         try:
             get_name = lambda x: x.__name__ == self.config['tokenizer']
-            tokenizer_class = filter(get_name, self.all_subclasses(BaseTokenizer))
+            tokenizer_class = filter(get_name,
+                                     self.all_subclasses(BaseTokenizer))
             tokenizer_class = tokenizer_class[0]
         except IndexError:
             raise NoTokenizerFoundError()

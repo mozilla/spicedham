@@ -53,7 +53,7 @@ class Bayes(BasePlugin):
         Raise NotYetTrainedError if the classifier has not yet been trained.
         """
         total = self.backend.get_key(self.__class__.__name__, '*')
-        if total == None:
+        if total is None:
             raise NotYetTrainedError()
         pSpam = total['numSpam'] / total['numTotal']
         # Since spam and ham are independant events
