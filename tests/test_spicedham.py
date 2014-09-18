@@ -64,7 +64,8 @@ class TestSpicedHam(TestCase):
     @patch('spicedham.Spicedham._load_backend')
     @patch('spicedham.Spicedham.all_subclasses')
     @patch('spicedham.Spicedham._load_tokenizer')
-    def test_load_plugins(self, mock_load_backend, mock_all_subclasses, mock_load_tokenizer):
+    def test_load_plugins(self, mock_load_backend, mock_all_subclasses,
+                          mock_load_tokenizer):
         # Make _load_backend a Nop
         mock_load_backend = Mock()  # noqa
         mock_load_tokenizer = Mock()  # noqa

@@ -1,6 +1,5 @@
-from itertools import repeat
-from spicedham.backend import BaseBackend
 from spicedham.plugin import BasePlugin
+
 
 class DigitDestroyer(BasePlugin):
     """
@@ -20,14 +19,6 @@ class DigitDestroyer(BasePlugin):
         There is no training necessary.
         """
         pass
-
-    def explain(self, response):
-        """
-        If the responses consists entirely of numbers, return the filter_match
-        value from the config and a string explanation. Otherwise return
-        filter_miss and a string explanation.
-        """
-        return self.explain(response)[0]
 
     def explain(self, response):
         """

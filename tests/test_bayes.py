@@ -1,12 +1,12 @@
+from itertools import izip, cycle
 from unittest import TestCase
-from itertools import repeat, imap, izip, cycle
 
 from spicedham.bayes import Bayes
 from spicedham import Spicedham
 
 
 class TestBayes(TestCase):
-    
+
     def test_classify(self):
         sh = Spicedham()
         b = Bayes(sh.config, sh.backend)

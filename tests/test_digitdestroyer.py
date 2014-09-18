@@ -3,8 +3,9 @@ from unittest import TestCase
 from spicedham import Spicedham
 from spicedham.digitdestroyer import DigitDestroyer
 
+
 class TestDigitDestroyer(TestCase):
-    
+
     def test_classify(self):
         sh = Spicedham()
         dd = DigitDestroyer(sh.config, sh.backend)

@@ -22,21 +22,21 @@ class SqlAlchemyWrapper(BaseBackend):
 
     def reset(self):
         session = self.sessionFactory()
-        everything = session.query(Store).delete()
+        session.query(Store).delete()
         session.commit()
-
 
     def get_key(self, classifier, key, default=None):
         """
-        Gets the value held by the classifier, key composite key. If it doesn't exist,
-        return default.
+        Gets the value held by the classifier, key composite key. If it doesn't
+        exist, return default.
         """
         session = self.sessionFactory()
-        query = session.query(Store).filter(Store.classifier==classifier, Store.key==key)
+        query = session.query(Store).filter(Store.classifier == classifier,
+                                            Store.key == key)
         try:
             store = query.one()
             value = json.loads(store.value)
-        except NoResultFound, e:
+        except NoResultFound:
             value = default
         return value
 
