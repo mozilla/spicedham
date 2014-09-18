@@ -20,7 +20,6 @@ class BasePlugin(object):
         is spam."""
         return self.explain(result)[0]
 
-
     def explain(self, result):
         """
         Takes an iterable `result` and returns the probability that it

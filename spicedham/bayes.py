@@ -53,15 +53,6 @@ class Bayes(BasePlugin):
         for the probability. response is a list.
         Raise NotYetTrainedError if the classifier has not yet been trained.
         """
-        # return the score without the explanation
-        return self.explain(response)[0]
-
-    def explain(self, response):
-        """
-        Get the probability that a response is spam, and a unicode explanation
-        for the probability. response is a list.
-        Raise NotYetTrainedError if the classifier has not yet been trained.
-        """
         total = self.backend.get_key(self.__class__.__name__, '*')
         if total is None:
             raise NotYetTrainedError()
@@ -93,7 +84,6 @@ class Bayes(BasePlugin):
                             unicode(pWordGivenSpam), unicode(pWordGivenHam),
                             unicode(pWordGivenSpam/pWord),
                             unicode(pWordGivenHam/pWord))
-            
         log.debug(explanation)
 
         p = ((pSpamGivenWord) / (pSpamGivenWord + pHamGivenWord))
