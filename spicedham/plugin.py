@@ -19,4 +19,12 @@ class BasePlugin(object):
         """
         Takes an iterable `result` and returns the probability that it
         is spam."""
+        return self.explain(result)[0]
+
+
+    def explain(self, result):
+        """
+        Takes an iterable `result` and returns the probability that it
+        is spam as well as a list of strings explaining the probability
+        """
         pass

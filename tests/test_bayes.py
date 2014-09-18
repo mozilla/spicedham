@@ -17,6 +17,17 @@ class TestBayes(TestCase):
             p = b.classify(letter)
             self.assertEqual(p, 0.5)
 
+    def test_explain(self):
+        sh = Spicedham()
+        b = Bayes(sh.config, sh.backend)
+        b.backend.reset()
+        self._training(b)
+        alphabet = map(chr, range(97, 123))
+        for letter in alphabet:
+            p, explanation = b.explain(letter)
+            self.assertEqual(p, 0.5)
+            self.assertEqual(type(explanation), unicode)
+
     def _training(self, bayes):
         alphabet = map(chr, range(97, 123))
         reversed_alphabet = reversed(alphabet)
