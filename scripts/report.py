@@ -31,7 +31,7 @@ def train_on_api_like_data(file_name):
             if result['control']:
                 continue
             train_start = time.time()
-            sh.train(result['description'], result['spam'])
+            sh.train('spam', result['description'], result['spam'])
             train_time += time.time() - train_start 
     else:
         print 'crowd corpus not found. continuing without it.'
@@ -51,7 +51,7 @@ def test_file(data_file_name):
         j = json.load(f)
         for resp in j['results']:
             test_results['Total'].append(resp['id'])
-            probability = sh.classify(resp['description'])
+            probability = sh.classify('spam', resp['description'])
             if 0.0 > probability > 1.0:
                 test_results['Errors'].append(resp['id'])
             if probability > THRESHHOLD:
@@ -93,7 +93,7 @@ def test_on_api_data(url='https://input.mozilla.org/api/v1/feedback/?locales=en-
     numSpam = 0
     numTotal = resps['count']
     for resp in resps['results']:
-        probability = sh.classify([ x for x in re.split('[ \n\r.,?!]', resp['description']) if x != ''])
+        probability = sh.classify('spam', [ x for x in re.split('[ \n\r.,?!]', resp['description']) if x != ''])
         if probability > THRESHHOLD:
             numSpam += 1
             resp['spam'] = True
@@ -116,7 +116,7 @@ def test_on_sumo_data_from_mythmons_laptop(url='http://10.252.25.122:8900/api/1/
     for resp in resps['results']:
         if not resp['spam']:
             continue
-        probability = sh.classify(re.split('[ \n\r.,?!]', resp['content']))
+        probability = sh.classify('spam', re.split('[ \n\r.,?!]', resp['content']))
         if probability > THRESHHOLD:
             numSpam += 1
             resp['spam'] = True
