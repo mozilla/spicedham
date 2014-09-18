@@ -6,12 +6,15 @@ from spicedham import Spicedham
 
 class TestNonsenseFilter(TestClassifierBase):
 
-    def test_train(self):
-        classification_type = 'type'
-        sh = Spicedham({'backend': 'SqlAlchemyWrapper',
+    def setUp(self):
+        self.sh = Spicedham({'backend': 'SqlAlchemyWrapper',
                         'engine': 'sqlite:///:memory:',
                         'tokenizer': 'SplitTokenizer'})
-        nonsense = NonsenseFilter(sh.config, sh.backend)
+        
+
+    def test_train(self):
+        classification_type = 'type'
+        nonsense = NonsenseFilter(self.sh.config, self.sh.backend)
         alphabet = map(chr, range(97, 123))
         reversed_alphabet = reversed(alphabet)
         self._training(classification_type, nonsense, alphabet,
@@ -19,7 +22,7 @@ class TestNonsenseFilter(TestClassifierBase):
         for letter in alphabet:
             self.assertEqual(
                 True,
-                sh.backend.get_key(
+                self.sh.backend.get_key(
                     classification_type,
                     nonsense.__class__.__name__,
                     letter
@@ -27,11 +30,8 @@ class TestNonsenseFilter(TestClassifierBase):
             )
 
     def test_classify(self):
-        sh = Spicedham({'backend': 'SqlAlchemyWrapper',
-                        'engine': 'sqlite:///:memory:',
-                        'tokenizer': 'SplitTokenizer'})
         classification_type = 'type'
-        nonsense = NonsenseFilter(sh.config, sh.backend)
+        nonsense = NonsenseFilter(self.sh.config, self.sh.backend)
         nonsense.filter_match = 1
         nonsense.filter_miss = 0
         alphabet = map(chr, range(97, 123))
@@ -51,10 +51,7 @@ class TestNonsenseFilter(TestClassifierBase):
 
     def test_explain(self):
         classification_type = 'type'
-        sh = Spicedham({'backend': 'SqlAlchemyWrapper',
-                        'engine': 'sqlite:///:memory:',
-                        'tokenizer': 'SplitTokenizer'})
-        nonsense = NonsenseFilter(sh.config, sh.backend)
+        nonsense = NonsenseFilter(self.sh.config, self.sh.backend)
         nonsense.filter_match = 1
         nonsense.filter_miss = 0
         alphabet = map(chr, range(97, 123))

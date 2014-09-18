@@ -17,7 +17,22 @@ except ImportError:
     pass
 
 
-class TestRedisWrapperAPIConformation(TestCase):
+class BaseBackendTester(object):
+
+    def setUp(self):
+        self.backend = None
+ 
+    def test_reset(self):
+        _test_subclass_reset(self.backend)
+
+    def test_set_and_get(self):
+        _test_subclass_set_and_get(self.backend)
+
+    def test_set_list_and_get_list(self):
+        _test_subclass_set_list_and_get_list(self.backend)
+
+
+class TestRedisWrapperAPIConformation(BaseBackendTester, TestCase):
 
     def setUp(self):
         try:
@@ -31,60 +46,25 @@ class TestRedisWrapperAPIConformation(TestCase):
                 raise SkipTest('No Redis server on localhost')
         except ImportError:
             raise SkipTest('Redis not installed')
-
-    def test_reset(self):
-        r = RedisWrapper({})
-        _test_subclass_reset(r)
-
-    def test_set_and_get(self):
-        r = RedisWrapper({})
-        _test_subclass_set_and_get(r)
-
-    def test_set_list_and_get_list(self):
-        r = RedisWrapper({})
-        _test_subclass_set_list_and_get_list(r)
+        self.backend = RedisWrapper({})
 
 
-class TestSqlAlchemyWrapperAPIConformation(TestCase):
+class TestSqlAlchemyWrapperAPIConformation(BaseBackendTester, TestCase):
 
     def setUp(self):
         try:
             import sqlalchemy  # noqa
         except ImportError:
             raise SkipTest('SqlAlchemy not installed')
-
-    def test_reset(self):
-        r = SqlAlchemyWrapper({'backend': 'SqlAlchemyWrapper',
+        self.backend = SqlAlchemyWrapper({'backend': 'SqlAlchemyWrapper',
                         'engine': 'sqlite:///:memory:',
                         'tokenizer': 'SplitTokenizer'})
-        _test_subclass_reset(r)
-
-    def test_set_and_get(self):
-        r = SqlAlchemyWrapper({'backend': 'SqlAlchemyWrapper',
-                        'engine': 'sqlite:///:memory:',
-                        'tokenizer': 'SplitTokenizer'})
-        _test_subclass_set_and_get(r)
-
-    def test_set_list_and_get_list(self):
-        r = SqlAlchemyWrapper({'backend': 'SqlAlchemyWrapper',
-                        'engine': 'sqlite:///:memory:',
-                        'tokenizer': 'SplitTokenizer'})
-        _test_subclass_set_list_and_get_list(r)
 
 
-class TestDictWrapperAPIConformation(TestCase):
+class TestDictWrapperAPIConformation(BaseBackendTester, TestCase):
 
-    def test_reset(self):
-        r = DictWrapper({})
-        _test_subclass_reset(r)
-
-    def test_set_and_get(self):
-        r = DictWrapper({})
-        _test_subclass_set_and_get(r)
-
-    def test_set_list_and_get_list(self):
-        r = DictWrapper({})
-        _test_subclass_set_list_and_get_list(r)
+    def setUp(self):
+        self.backend = DictWrapper({})
 
 
 def _test_subclass_reset(subclass):

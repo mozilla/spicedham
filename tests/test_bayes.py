@@ -7,12 +7,14 @@ from spicedham import Spicedham
 
 class TestBayes(TestCase):
 
-    def test_classify(self):
-        classification_type = 'type'
-        sh = Spicedham({'backend': 'SqlAlchemyWrapper',
+    def setUp(self):
+        self.sh = Spicedham({'backend': 'SqlAlchemyWrapper',
                         'engine': 'sqlite:///:memory:',
                         'tokenizer': 'SplitTokenizer'})
-        b = Bayes(sh.config, sh.backend)
+
+    def test_classify(self):
+        classification_type = 'type'
+        b = Bayes(self.sh.config, self.sh.backend)
         b.backend.reset()
         self._training(classification_type, b)
         alphabet = map(chr, range(97, 123))
@@ -22,10 +24,7 @@ class TestBayes(TestCase):
 
     def test_explain(self):
         classification_type = 'type'
-        sh = Spicedham({'backend': 'SqlAlchemyWrapper',
-                        'engine': 'sqlite:///:memory:',
-                        'tokenizer': 'SplitTokenizer'})
-        b = Bayes(sh.config, sh.backend)
+        b = Bayes(self.sh.config, self.sh.backend)
         b.backend.reset()
         self._training(classification_type, b)
         alphabet = map(chr, range(97, 123))
@@ -44,14 +43,11 @@ class TestBayes(TestCase):
     def test_train(self):
         classification_type = 'type'
         alphabet = map(chr, range(97, 123))
-        sh = Spicedham({'backend': 'SqlAlchemyWrapper',
-                        'engine': 'sqlite:///:memory:',
-                        'tokenizer': 'SplitTokenizer'})
-        b = Bayes(sh.config, sh.backend)
+        b = Bayes(self.sh.config, self.sh.backend)
         b.backend.reset()
         self._training(classification_type, b)
         for letter in alphabet:
-            result = sh.backend.get_key(classification_type,
+            result = self.sh.backend.get_key(classification_type,
                                         b.__class__.__name__, letter)
             self.assertEqual(result, {'numTotal': 2, 'numSpam': 1})
             self.assertTrue(result['numTotal'] >= result['numSpam'])

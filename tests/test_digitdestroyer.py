@@ -6,12 +6,14 @@ from spicedham.digitdestroyer import DigitDestroyer
 
 class TestDigitDestroyer(TestCase):
 
-    def test_classify(self):
-        classifier_type = 'type'
-        sh = Spicedham({'backend': 'SqlAlchemyWrapper',
+    def setUp(self):
+        self.sh = Spicedham({'backend': 'SqlAlchemyWrapper',
                         'engine': 'sqlite:///:memory:',
                         'tokenizer': 'SplitTokenizer'})
-        dd = DigitDestroyer(sh.config, sh.backend)
+
+    def test_classify(self):
+        classifier_type = 'type'
+        dd = DigitDestroyer(self.sh.config, self.sh.backend)
         dd.filter_match = 1
         dd.filter_miss = 0
         match_message = ['1', '2', '3', '1', '1']
@@ -21,10 +23,7 @@ class TestDigitDestroyer(TestCase):
 
     def test_explain(self):
         classifier_type = 'type'
-        sh = Spicedham({'backend': 'SqlAlchemyWrapper',
-                        'engine': 'sqlite:///:memory:',
-                        'tokenizer': 'SplitTokenizer'})
-        dd = DigitDestroyer(sh.config, sh.backend)
+        dd = DigitDestroyer(self.sh.config, self.sh.backend)
         dd.filter_match = 1
         dd.filter_miss = 0
         match_message = ['1', '2', '3', '1', '1']
