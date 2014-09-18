@@ -38,12 +38,14 @@ A classifier should implement a ``classify`` method and optionally a ``train``
 and an ``__init__`` method.
 The ``classify`` method should take the following arguments:
 * ``self``: Just like a normal python class method
+* ``classification_type``: A type used to differentiate between separate
+types of classifications, such as spam and hate speech
 * ``message``: A message to be processed by the tokenizer
 The ``classify`` method must return either a float between 0.0 and 1.0
 represtenting the probability that the classified data was matched, or the
 ``classify`` function may elect not to classify this message and return
 ``None``.
-The first two arguments of the ``train`` function are the same as the
+The first three arguments of the ``train`` function are the same as the
 ``classify`` function. In addition, ``train`` expects a bool argument
 ``is_spam`` indicating whether or not the provided data is spam. ``train``
 should not explicitly return anything.
@@ -77,9 +79,10 @@ Writing a Backend Class
 
 A backend should inherit from ``spicedham.backend.BaseBackend``.
 A backend must implement the following methods:
-* ``set_key``: Takes three strings, a classifier, a key, and dictionary value
-* ``get_key``: Takes two strings, a classifier and a key and returns a
-dictionary value or None if key is not present.
+* ``set_key``: Takes four strings, a classification type, a classifier, a key,
+and dictionary value
+* ``get_key``: Takes three strings, a classification type, a classifier and a
+key and returns a dictionary value or None if key is not present.
 May take an optional keyword argument ``default``.
 * ``reset``: Drops all keys and values. Useful in tests.
 A backend may additionally implement the following methods:
@@ -146,7 +149,7 @@ probability, just None
 
 ::
 	...
-	def classify(self, response):
+	def classify(self, classification_type response):
 		if self.word in response:
 			return 1.0
 		else:
@@ -195,16 +198,16 @@ We need to be able to conver between dictionaries and strings, so we'll use
 Now we need to be able to set keys:
 
 ::
-    def set_key(self, classifier, key, value):
+    def set_key(self, classification_type, classifier, key, value):
         value = json.dumps(value)
-        redis_server.set(classifier + key, value)
+        redis_server.set(classification_type + classifier + key, value)
 
 We should make our ``get_keys`` function act like ``dict.get`` and give it an
 optional default value of None.
 
 ::
-    def get_key(self, classifier, key, default=None):
-        value = redis_server.get(classifier + key)
+    def get_key(self, classification_type, classifier, key, default=None):
+        value = redis_server.get(classification_type + classifier + key)
         if value is None:
             return default
         return json.loads(value)
