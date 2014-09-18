@@ -47,14 +47,6 @@ class Bayes(BasePlugin):
         self.backend.set_key_list(self.__class__.__name__, results)
         self.backend.set_key(self.__class__.__name__, '*', total)
 
-    def classify(self, response):
-        """
-        Get the probability that a response is spam. response is a list.
-        Raise NotYetTrainedError if the classifier has not yet been trained.
-        """
-        # return the score without the explanation
-        return self.explain(response)[0]
-
     def explain(self, response):
         """
         Get the probability that a response is spam, and a unicode explanation

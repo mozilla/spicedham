@@ -21,13 +21,6 @@ class DigitDestroyer(BasePlugin):
         """
         pass
 
-    def classify(self, response):
-        """
-        If the responses consists entirely of numbers, return the filter_match
-        value from the config file. Otherwise return filter_miss.
-        """
-        return self.explain(response)[0]
-
     def explain(self, response):
         """
         If the responses consists entirely of numbers, return the filter_match
