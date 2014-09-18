@@ -2,8 +2,14 @@ from itertools import izip, cycle
 
 from unittest import TestCase
 
+from spicedham import Spicedham
 
-class TestClassifierBase(TestCase):
+class SpicedhamTestCase(TestCase):
+
+    def setUp(self):
+        self.sh = Spicedham({'backend': 'SqlAlchemyWrapper',
+                             'engine': 'sqlite:///:memory:',
+                             'tokenizer': 'SplitTokenizer'})
 
     def _training(self, classification_type, classifier, alphabet,
                   reversed_alphabet):

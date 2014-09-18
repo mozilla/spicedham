@@ -1,16 +1,12 @@
-from tests.test_classifierbase import TestClassifierBase
+from tests.test_basetestcase import SpicedhamTestCase
+
+from tests.test_basetestcase import SpicedhamTestCase
 
 from spicedham.nonsensefilter import NonsenseFilter
 from spicedham import Spicedham
 
 
-class TestNonsenseFilter(TestClassifierBase):
-
-    def setUp(self):
-        self.sh = Spicedham({'backend': 'SqlAlchemyWrapper',
-                        'engine': 'sqlite:///:memory:',
-                        'tokenizer': 'SplitTokenizer'})
-        
+class TestNonsenseFilter(SpicedhamTestCase):
 
     def test_train(self):
         classification_type = 'type'

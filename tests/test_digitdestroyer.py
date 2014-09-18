@@ -1,10 +1,12 @@
 from unittest import TestCase
 
+from tests.test_basetestcase import SpicedhamTestCase
+
 from spicedham import Spicedham
 from spicedham.digitdestroyer import DigitDestroyer
 
 
-class TestDigitDestroyer(TestCase):
+class TestDigitDestroyer(SpicedhamTestCase):
 
     def setUp(self):
         self.sh = Spicedham({'backend': 'SqlAlchemyWrapper',

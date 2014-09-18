@@ -4,13 +4,10 @@ from unittest import TestCase
 from spicedham.bayes import Bayes
 from spicedham import Spicedham
 
+from tests.test_basetestcase import SpicedhamTestCase
 
-class TestBayes(TestCase):
 
-    def setUp(self):
-        self.sh = Spicedham({'backend': 'SqlAlchemyWrapper',
-                        'engine': 'sqlite:///:memory:',
-                        'tokenizer': 'SplitTokenizer'})
+class TestBayes(SpicedhamTestCase):
 
     def test_classify(self):
         classification_type = 'type'
