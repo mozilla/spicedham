@@ -8,7 +8,9 @@ class TestNonsenseFilter(TestClassifierBase):
 
     def test_train(self):
         classification_type = 'type'
-        sh = Spicedham()
+        sh = Spicedham({'backend': 'SqlAlchemyWrapper',
+                        'engine': 'sqlite:///:memory:',
+                        'tokenizer': 'SplitTokenizer'})
         nonsense = NonsenseFilter(sh.config, sh.backend)
         alphabet = map(chr, range(97, 123))
         reversed_alphabet = reversed(alphabet)
@@ -25,7 +27,9 @@ class TestNonsenseFilter(TestClassifierBase):
             )
 
     def test_classify(self):
-        sh = Spicedham()
+        sh = Spicedham({'backend': 'SqlAlchemyWrapper',
+                        'engine': 'sqlite:///:memory:',
+                        'tokenizer': 'SplitTokenizer'})
         classification_type = 'type'
         nonsense = NonsenseFilter(sh.config, sh.backend)
         nonsense.filter_match = 1
@@ -47,7 +51,9 @@ class TestNonsenseFilter(TestClassifierBase):
 
     def test_explain(self):
         classification_type = 'type'
-        sh = Spicedham()
+        sh = Spicedham({'backend': 'SqlAlchemyWrapper',
+                        'engine': 'sqlite:///:memory:',
+                        'tokenizer': 'SplitTokenizer'})
         nonsense = NonsenseFilter(sh.config, sh.backend)
         nonsense.filter_match = 1
         nonsense.filter_miss = 0

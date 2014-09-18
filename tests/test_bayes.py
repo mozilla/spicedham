@@ -9,7 +9,9 @@ class TestBayes(TestCase):
 
     def test_classify(self):
         classification_type = 'type'
-        sh = Spicedham()
+        sh = Spicedham({'backend': 'SqlAlchemyWrapper',
+                        'engine': 'sqlite:///:memory:',
+                        'tokenizer': 'SplitTokenizer'})
         b = Bayes(sh.config, sh.backend)
         b.backend.reset()
         self._training(classification_type, b)
@@ -20,7 +22,9 @@ class TestBayes(TestCase):
 
     def test_explain(self):
         classification_type = 'type'
-        sh = Spicedham()
+        sh = Spicedham({'backend': 'SqlAlchemyWrapper',
+                        'engine': 'sqlite:///:memory:',
+                        'tokenizer': 'SplitTokenizer'})
         b = Bayes(sh.config, sh.backend)
         b.backend.reset()
         self._training(classification_type, b)
@@ -40,7 +44,9 @@ class TestBayes(TestCase):
     def test_train(self):
         classification_type = 'type'
         alphabet = map(chr, range(97, 123))
-        sh = Spicedham()
+        sh = Spicedham({'backend': 'SqlAlchemyWrapper',
+                        'engine': 'sqlite:///:memory:',
+                        'tokenizer': 'SplitTokenizer'})
         b = Bayes(sh.config, sh.backend)
         b.backend.reset()
         self._training(classification_type, b)

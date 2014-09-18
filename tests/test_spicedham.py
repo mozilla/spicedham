@@ -15,7 +15,9 @@ class TestSpicedHam(TestCase):
         plugin2.classify.return_value = .75
         mock_classifier_plugins = [plugin0, plugin1, plugin2]
         classification_type = 'type'
-        sh = Spicedham()
+        sh = Spicedham({'backend': 'SqlAlchemyWrapper',
+                        'engine': 'sqlite:///:memory:',
+                        'tokenizer': 'SplitTokenizer'})
         sh._classifier_plugins = mock_classifier_plugins
         # Test when some plugins return numbers and some return None
         value = sh.classify(classification_type, 'classification data')
@@ -34,7 +36,9 @@ class TestSpicedHam(TestCase):
         plugin1.explain.return_value = .5, 'test'
         plugin2.explain.return_value = .75, 'test'
         mock_classifier_plugins = [plugin0, plugin1, plugin2]
-        sh = Spicedham()
+        sh = Spicedham({'backend': 'SqlAlchemyWrapper',
+                        'engine': 'sqlite:///:memory:',
+                        'tokenizer': 'SplitTokenizer'})
         sh._classifier_plugins = mock_classifier_plugins
         # Test when some plugins return numbers and some return None
         value, explanation = sh.explain('classification data')
@@ -54,7 +58,9 @@ class TestSpicedHam(TestCase):
         plugin1 = Mock()
         plugin2 = Mock()
         mock_classifier_plugins = [plugin0, plugin1, plugin2]
-        sh = Spicedham()
+        sh = Spicedham({'backend': 'SqlAlchemyWrapper',
+                        'engine': 'sqlite:///:memory:',
+                        'tokenizer': 'SplitTokenizer'})
         classification_type = 'type'
         sh._classifier_plugins = mock_classifier_plugins
         # Test when some plugins return numbers and some return None
@@ -75,7 +81,9 @@ class TestSpicedHam(TestCase):
         plugin1 = Mock()
         plugin2 = Mock()
         mock_all_subclasses.return_value = [plugin0, plugin1, plugin2]
-        sh = Spicedham()
+        sh = Spicedham({'backend': 'SqlAlchemyWrapper',
+                        'engine': 'sqlite:///:memory:',
+                        'tokenizer': 'SplitTokenizer'})
         sh._load_plugins()
         self.assertEqual(plugin0.called, True)
         self.assertEqual(plugin1.called, True)
@@ -93,10 +101,14 @@ class TestSpicedHam(TestCase):
         backend2 = Mock()
         backend2.__name__ = 'StillNotSqlAlchemyWrapper'
         mock_all_subclasses.return_value = [backend0, backend1, backend2]
-        sh = Spicedham()
+        sh = Spicedham({'backend': 'SqlAlchemyWrapper',
+                        'engine': 'sqlite:///:memory:',
+                        'tokenizer': 'SplitTokenizer'})
         sh._load_backend()
         self.assertEqual(sh.backend, backend0Returns)
-        sh = Spicedham()
+        sh = Spicedham({'backend': 'SqlAlchemyWrapper',
+                        'engine': 'sqlite:///:memory:',
+                        'tokenizer': 'SplitTokenizer'})
         mock_all_subclasses.return_value = []
         self.assertRaises(NoBackendFoundError, sh._load_backend)
 
@@ -112,10 +124,14 @@ class TestSpicedHam(TestCase):
         tokenizer2 = Mock()
         tokenizer2.__name__ = 'StillNotSqlAlchemyWrapper'
         mock_all_subclasses.return_value = [tokenizer0, tokenizer1, tokenizer2]
-        sh = Spicedham()
+        sh = Spicedham({'backend': 'SqlAlchemyWrapper',
+                        'engine': 'sqlite:///:memory:',
+                        'tokenizer': 'SplitTokenizer'})
         sh._load_tokenizer()
         self.assertEqual(sh.tokenizer, tokenizer0Returns)
-        sh = Spicedham()
+        sh = Spicedham({'backend': 'SqlAlchemyWrapper',
+                        'engine': 'sqlite:///:memory:',
+                        'tokenizer': 'SplitTokenizer'})
         mock_all_subclasses.return_value = []
         self.assertRaises(NoTokenizerFoundError, sh._load_tokenizer)
 
@@ -129,7 +145,9 @@ class TestSpicedHam(TestCase):
 
         class child1(parent):
             pass
-        sh = Spicedham()
+        sh = Spicedham({'backend': 'SqlAlchemyWrapper',
+                        'engine': 'sqlite:///:memory:',
+                        'tokenizer': 'SplitTokenizer'})
         result = sh.all_subclasses(parent)
         self.assertTrue(child0 in result)
         self.assertTrue(child1 in result)

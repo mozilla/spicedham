@@ -8,7 +8,9 @@ class TestDigitDestroyer(TestCase):
 
     def test_classify(self):
         classifier_type = 'type'
-        sh = Spicedham()
+        sh = Spicedham({'backend': 'SqlAlchemyWrapper',
+                        'engine': 'sqlite:///:memory:',
+                        'tokenizer': 'SplitTokenizer'})
         dd = DigitDestroyer(sh.config, sh.backend)
         dd.filter_match = 1
         dd.filter_miss = 0
@@ -19,7 +21,9 @@ class TestDigitDestroyer(TestCase):
 
     def test_explain(self):
         classifier_type = 'type'
-        sh = Spicedham()
+        sh = Spicedham({'backend': 'SqlAlchemyWrapper',
+                        'engine': 'sqlite:///:memory:',
+                        'tokenizer': 'SplitTokenizer'})
         dd = DigitDestroyer(sh.config, sh.backend)
         dd.filter_match = 1
         dd.filter_miss = 0
