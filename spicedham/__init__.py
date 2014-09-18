@@ -70,7 +70,7 @@ class Spicedham(object):
             raise NoTokenizerFoundError()
         self.tokenizer = tokenizer_class(self.config)
 
-    def train(self, training_data, match):
+    def train(self, classification_type, training_data, match):
         """
         Feeds `training_data` to the tokenizer and calls each plugin's train
         function.
@@ -81,9 +81,9 @@ class Spicedham(object):
         """
         training_data = self.tokenizer.tokenize(training_data)
         for plugin in self._classifier_plugins:
-            plugin.train(training_data, match)
+            plugin.train(classification_type, training_data, match)
 
-    def classify(self, classification_data):
+    def classify(self, classification_type, classification_data):
         """
         Feeds `classification_data` to the tokenizer, calls each plugin's
         classify function, and averages the results.
@@ -93,7 +93,7 @@ class Spicedham(object):
         average_score = 0
         total = 0
         for plugin in self._classifier_plugins:
-            value = plugin.classify(classification_data)
+            value = plugin.classify(classification_type, classification_data)
             # Skip _plugins which give a score of None
             if value is not None:
                 total += 1
