@@ -54,15 +54,21 @@ class TestSqlAlchemyWrapperAPIConformation(TestCase):
             raise SkipTest('SqlAlchemy not installed')
 
     def test_reset(self):
-        r = SqlAlchemyWrapper({})
+        r = SqlAlchemyWrapper({'backend': 'SqlAlchemyWrapper',
+                        'engine': 'sqlite:///:memory:',
+                        'tokenizer': 'SplitTokenizer'})
         _test_subclass_reset(r)
 
     def test_set_and_get(self):
-        r = SqlAlchemyWrapper({})
+        r = SqlAlchemyWrapper({'backend': 'SqlAlchemyWrapper',
+                        'engine': 'sqlite:///:memory:',
+                        'tokenizer': 'SplitTokenizer'})
         _test_subclass_set_and_get(r)
 
     def test_set_list_and_get_list(self):
-        r = SqlAlchemyWrapper({})
+        r = SqlAlchemyWrapper({'backend': 'SqlAlchemyWrapper',
+                        'engine': 'sqlite:///:memory:',
+                        'tokenizer': 'SplitTokenizer'})
         _test_subclass_set_list_and_get_list(r)
 
 
