@@ -57,7 +57,8 @@ class Bayes(BasePlugin):
         for the probability. response is a list.
         Raise NotYetTrainedError if the classifier has not yet been trained.
         """
-        total = self.backend.get_key(self.__class__.__name__, '*')
+        total = self.backend.get_key(classification_type,
+                                     self.__class__.__name__, '*')
         if total is None:
             raise NotYetTrainedError()
         pSpam = total['numSpam'] / total['numTotal']

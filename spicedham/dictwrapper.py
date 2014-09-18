@@ -8,11 +8,11 @@ class DictWrapper(BaseBackend):
 
     store = {}
 
-    def set_key(self, classifier, key, value):
-        self.store[(classifier, key)] = value
+    def set_key(self, classification_type, classifier, key, value):
+        self.store[(classification_type, classifier, key)] = value
 
-    def get_key(self, classifier, key, default=None):
-        return self.store.get((classifier, key), default)
+    def get_key(self, classification_type,  classifier, key, default=None):
+        return self.store.get((classification_type, classifier, key), default)
 
     def reset(self):
         self.store = {}

@@ -85,39 +85,44 @@ def _test_subclass_reset(subclass):
     key0 = 'key0'
     value0 = {'val': 0}
     classifier = 'classifier'
-    subclass.set_key(classifier, key0, value0)
+    classification_type = 'type'
+    subclass.set_key(classification_type, classifier, key0, value0)
     subclass.reset()
-    received_value0 = subclass.get_key(classifier, key0)
+    received_value0 = subclass.get_key(classification_type, classifier, key0)
     assert received_value0 is None
 
 
 def _test_subclass_set_and_get(subclass):
     subclass.reset()
     classifier = 'classifier'
+    classification_type = 'type'
     key0 = 'key0'
     key1 = 'key1'
     key2 = 'key2'
     value0 = {'val': 0}
     value1 = {'val': 1}
     value2 = {'val': 2}
-    subclass.set_key(classifier, key0, value0)
-    received_value0 = subclass.get_key(classifier, key0)
-    subclass.set_key(classifier, key1, value1)
-    received_value1 = subclass.get_key(classifier, key1)
-    subclass.set_key(classifier, key2, value2)
-    received_value2 = subclass.get_key(classifier, key2)
+    subclass.set_key(classification_type, classifier, key0, value0)
+    received_value0 = subclass.get_key(classification_type, classifier, key0)
+    subclass.set_key(classification_type, classifier, key1, value1)
+    received_value1 = subclass.get_key(classification_type, classifier, key1)
+    subclass.set_key(classification_type, classifier, key2, value2)
+    received_value2 = subclass.get_key(classification_type, classifier, key2)
     assert received_value0 == value0
     assert received_value1 == value1
     assert received_value2 == value2
-    received_value3 = subclass.get_key(classifier, 'not_set')
+    received_value3 = subclass.get_key(classification_type, classifier,
+                                       'not_set')
     assert received_value3 is None
-    received_value4 = subclass.get_key(classifier, 'not_set', 'default')
+    received_value4 = subclass.get_key(classification_type, classifier,
+                                       'not_set', 'default')
     assert received_value4 == 'default'
 
 
 def _test_subclass_set_list_and_get_list(subclass):
     subclass.reset()
     classifier = 'classifier'
+    classification_type = 'type'
     key0 = 'key0'
     key1 = 'key1'
     key2 = 'key2'
@@ -127,7 +132,8 @@ def _test_subclass_set_list_and_get_list(subclass):
     set_list = [(key0, value0), (key1, value1), (key2, value2)]
     get_list = [key0, key1, key2, 'not_set']
     expected_list = [value0, value1, value2, None]
-    subclass.set_key_list(classifier, set_list)
-    received_list = subclass.get_key_list(classifier, get_list)
+    subclass.set_key_list(classification_type, classifier, set_list)
+    received_list = subclass.get_key_list(classification_type, classifier,
+                                          get_list)
     print received_list, get_list, subclass
     assert sorted(expected_list) == sorted(received_list)

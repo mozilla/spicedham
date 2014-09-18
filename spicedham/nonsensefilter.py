@@ -24,7 +24,7 @@ class NonsenseFilter(BasePlugin):
         self.backend.set_key_list(classification_type, self.__class__.__name__,
                                   set([(word, True) for word in response]))
 
-    def explain(self, response):
+    def explain(self, classification_type, response):
         """
         If the message contains only words not found in the database return
         filter_match and a string expanation. Else return filter_miss and a

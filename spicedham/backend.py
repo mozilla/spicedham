@@ -1,3 +1,6 @@
+from itertools import izip, repeat
+
+
 class BaseBackend(object):
     """
     A base class for backend plugins.
@@ -28,7 +31,13 @@ class BaseBackend(object):
         requests.
         """
         return [self.get_key(classification_type, classifier, key, default)
-                for classifier, key in izip(repeat(classifier), keys)]
+                for key in keys]
+
+    def set_key(self, classification_type, classifier, key, value):
+        """
+        Set the value held by the classifier, key composite key.
+        """
+        raise NotImplementedError()
 
     def set_key_list(self, classification_type, classifier, key_value_pairs):
         """
@@ -37,11 +46,5 @@ class BaseBackend(object):
         requests.
         """
         return [self.set_key(classification_type, classifier, key, value)
-                for classifier, key, value
-                in izip(repeat(classifier), key_value_pairs)]
-
-    def set_key(self, classification_type, classifier, key, value):
-        """
-        Set the value held by the classifier, key composite key.
-        """
-        raise NotImplementedError()
+                for key, value
+                in key_value_pairs]

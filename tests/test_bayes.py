@@ -19,13 +19,14 @@ class TestBayes(TestCase):
             self.assertEqual(p, 0.5)
 
     def test_explain(self):
+        classification_type = 'type'
         sh = Spicedham()
         b = Bayes(sh.config, sh.backend)
         b.backend.reset()
-        self._training(b)
+        self._training(classification_type, b)
         alphabet = map(chr, range(97, 123))
         for letter in alphabet:
-            p, explanation = b.explain(letter)
+            p, explanation = b.explain(classification_type, letter)
             self.assertEqual(p, 0.5)
             self.assertEqual(type(explanation), unicode)
 
