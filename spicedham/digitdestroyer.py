@@ -20,7 +20,7 @@ class DigitDestroyer(BasePlugin):
         """
         pass
 
-    def explain(self, response):
+    def explain(self, classification_type, response):
         """
         If the responses consists entirely of numbers, return the filter_match
         value from the config and a string explanation. Otherwise return
