@@ -14,15 +14,16 @@ class TestSpicedHam(TestCase):
         plugin1.classify.return_value = .5
         plugin2.classify.return_value = .75
         mock_classifier_plugins = [plugin0, plugin1, plugin2]
+        classification_type = 'type'
         sh = Spicedham()
         sh._classifier_plugins = mock_classifier_plugins
         # Test when some plugins return numbers and some return None
-        value = sh.classify('classification data')
+        value = sh.classify(classification_type, 'classification data')
         self.assertEqual(value, 0.625)
         # Test when all plugins return one
         plugin1.classify.return_value = None
         plugin2.classify.return_value = None
-        value = sh.classify('classification data')
+        value = sh.classify(classification_type, 'classification data')
         self.assertEqual(value, 0)
 
     def test_explain(self):
@@ -54,9 +55,10 @@ class TestSpicedHam(TestCase):
         plugin2 = Mock()
         mock_classifier_plugins = [plugin0, plugin1, plugin2]
         sh = Spicedham()
+        classification_type = 'type'
         sh._classifier_plugins = mock_classifier_plugins
         # Test when some plugins return numbers and some return None
-        sh.train('classification data', True)
+        sh.train(classification_type, 'classification data', True)
         self.assertTrue(plugin0.train.called)
         self.assertTrue(plugin1.train.called)
         self.assertTrue(plugin2.train.called)
