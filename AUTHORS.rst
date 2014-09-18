@@ -11,4 +11,7 @@ Development Lead
 Contributors
 ============
 
-None yet. Why not be the first?
+* Ian Kronquist
+* Will Khan-Greene
+* Mike Cooper
+* Chris Lonnen

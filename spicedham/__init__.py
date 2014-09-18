@@ -6,6 +6,8 @@ from spicedham.config import BaseConfig
 # TODO: This is gross
 import spicedham.gottaimportthemall
 
+__version__ = '0.0.0'
+
 
 class NoBackendFoundError(Exception):
     pass
