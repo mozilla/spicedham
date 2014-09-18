@@ -78,17 +78,19 @@ classify spam:
 
 2. Train on data. The arguments are:
 
+   * A string type which indicates the type of classification (to differentiate
+     between, say, spam and hate speech)
    * A string message which can be split up by your chosen tokenizer.
    * A boolean indicating whether classifiers should match the message
 
    ::
 
-       spicedham.train('I love Firefox!', False)
-       spicedham.train('SPAMMY NONSENSE AND HATE SPEECH!', True)
+       spicedham.train('spam', 'I love Firefox!', False)
+       spicedham.train('spam', 'SPAMMY NONSENSE AND HATE SPEECH!', True)
 
 3. Classify some data. ``chance_matched`` is a probability that the message was
    what you're searching for and will be between 0 and 1 (inclusive).
 
    ::
 
-       chance_matched = spicedham.classify('maybe I'm spam or maybe not')
+       chance_matched = spicedham.classify('spam', 'maybe I'm spam or maybe not')
