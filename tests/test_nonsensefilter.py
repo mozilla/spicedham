@@ -3,6 +3,7 @@ from tests.test_classifierbase import TestClassifierBase
 from spicedham.nonsensefilter import NonsenseFilter
 from spicedham import Spicedham
 
+
 class TestNonsenseFilter(TestClassifierBase):
 
     def test_train(self):
@@ -12,9 +13,14 @@ class TestNonsenseFilter(TestClassifierBase):
         reversed_alphabet = reversed(alphabet)
         self._training(nonsense, alphabet, reversed_alphabet)
         for letter in alphabet:
-            self.assertEqual(True,
-                sh.backend.get_key(nonsense.__class__.__name__, letter))
-    
+            self.assertEqual(
+                True,
+                sh.backend.get_key(
+                    nonsense.__class__.__name__,
+                    letter
+                )
+            )
+
     def test_classify(self):
         sh = Spicedham()
         nonsense = NonsenseFilter(sh.config, sh.backend)

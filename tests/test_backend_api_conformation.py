@@ -2,8 +2,6 @@ from unittest import TestCase
 
 from nose.exc import SkipTest
 
-from spicedham import Spicedham
-from spicedham.backend import BaseBackend
 from spicedham.dictwrapper import DictWrapper
 
 
@@ -51,20 +49,20 @@ class TestSqlAlchemyWrapperAPIConformation(TestCase):
 
     def setUp(self):
         try:
-            import sqlalchemy
+            import sqlalchemy  # noqa
         except ImportError:
             raise SkipTest('SqlAlchemy not installed')
 
     def test_reset(self):
-        r =  SqlAlchemyWrapper({})
+        r = SqlAlchemyWrapper({})
         _test_subclass_reset(r)
 
     def test_set_and_get(self):
-        r =  SqlAlchemyWrapper({})
+        r = SqlAlchemyWrapper({})
         _test_subclass_set_and_get(r)
 
     def test_set_list_and_get_list(self):
-        r =  SqlAlchemyWrapper({})
+        r = SqlAlchemyWrapper({})
         _test_subclass_set_list_and_get_list(r)
 
 
@@ -82,6 +80,7 @@ class TestDictWrapperAPIConformation(TestCase):
         r = DictWrapper({})
         _test_subclass_set_list_and_get_list(r)
 
+
 def _test_subclass_reset(subclass):
     key0 = 'key0'
     value0 = {'val': 0}
@@ -90,7 +89,7 @@ def _test_subclass_reset(subclass):
     subclass.reset()
     received_value0 = subclass.get_key(classifier, key0)
     assert received_value0 is None
-    
+
 
 def _test_subclass_set_and_get(subclass):
     subclass.reset()
@@ -114,6 +113,7 @@ def _test_subclass_set_and_get(subclass):
     assert received_value3 is None
     received_value4 = subclass.get_key(classifier, 'not_set', 'default')
     assert received_value4 == 'default'
+
 
 def _test_subclass_set_list_and_get_list(subclass):
     subclass.reset()
