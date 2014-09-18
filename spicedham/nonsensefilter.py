@@ -16,22 +16,22 @@ class NonsenseFilter(BasePlugin):
         nonsensefilter_config = config.get('nonsensefilter', {})
         self.filter_match = nonsensefilter_config.get('filter_match', 1)
         self.filter_miss = nonsensefilter_config.get('filter_miss', None)
-
-    def train(self, response, value):
+    
+    def train(self, classification_type, response, value):
         """
         Set each word to True.
         """
-        self.backend.set_key_list(self.__class__.__name__,
+        self.backend.set_key_list(classification_type, self.__class__.__name__,
                                   set([(word, True) for word in response]))
 
-    def explain(self, response):
+    def explain(self, classification_type, response):
         """
         If the message contains only words not found in the database return
         filter_match and a string expanation. Else return filter_miss and a
         string explanation.
         """
         classifier = self.__class__.__name__
-        list_in_dict = lambda x, y: not self.backend.get_key(x, y, False)
+        list_in_dict = lambda x, y: not self.backend.get_key(classification_type, x, y, False)
         if all(imap(list_in_dict, repeat(classifier), response)):
             return (self.filter_match,
                     'None of the response\'s words were found in the backend')

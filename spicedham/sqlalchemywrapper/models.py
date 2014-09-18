@@ -17,8 +17,10 @@ class Store(Base):
     __tablename__ = 'store'
     key = Column(String)
     classifier = Column(String)
+    classification_type = Column(String)
     value = Column(String)
-    __table_args__ = (PrimaryKeyConstraint('key', 'classifier'),)
+    __table_args__ = (PrimaryKeyConstraint('key', 'classification_type',
+        'classifier'),)
 
     # TODO: Add the tag here
     def __unicode__(self):

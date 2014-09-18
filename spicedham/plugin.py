@@ -14,13 +14,13 @@ class BasePlugin(object):
         """
         pass
 
-    def classify(self, result):
+    def classify(self, classification_type, result):
         """
         Takes an iterable `result` and returns the probability that it
         is spam."""
-        return self.explain(result)[0]
+        return self.explain(classification_type, result)[0]
 
-    def explain(self, result):
+    def explain(self, classification_type, result):
         """
         Takes an iterable `result` and returns the probability that it
         is spam as well as a list of strings explaining the probability

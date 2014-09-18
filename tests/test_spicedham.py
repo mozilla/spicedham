@@ -6,6 +6,11 @@ from mock import Mock, patch
 
 class TestSpicedHam(TestCase):
 
+    def setUp(self):
+        self.sh = Spicedham({'backend': 'SqlAlchemyWrapper',
+                        'engine': 'sqlite:///:memory:',
+                        'tokenizer': 'SplitTokenizer'})
+
     def test_classify(self):
         plugin0 = Mock()
         plugin1 = Mock()
@@ -14,15 +19,15 @@ class TestSpicedHam(TestCase):
         plugin1.classify.return_value = .5
         plugin2.classify.return_value = .75
         mock_classifier_plugins = [plugin0, plugin1, plugin2]
-        sh = Spicedham()
-        sh._classifier_plugins = mock_classifier_plugins
+        classification_type = 'type'
+        self.sh._classifier_plugins = mock_classifier_plugins
         # Test when some plugins return numbers and some return None
-        value = sh.classify('classification data')
+        value = self.sh.classify(classification_type, 'classification data')
         self.assertEqual(value, 0.625)
         # Test when all plugins return one
         plugin1.classify.return_value = None
         plugin2.classify.return_value = None
-        value = sh.classify('classification data')
+        value = self.sh.classify(classification_type, 'classification data')
         self.assertEqual(value, 0)
 
     def test_explain(self):
@@ -33,17 +38,16 @@ class TestSpicedHam(TestCase):
         plugin1.explain.return_value = .5, 'test'
         plugin2.explain.return_value = .75, 'test'
         mock_classifier_plugins = [plugin0, plugin1, plugin2]
-        sh = Spicedham()
-        sh._classifier_plugins = mock_classifier_plugins
+        self.sh._classifier_plugins = mock_classifier_plugins
         # Test when some plugins return numbers and some return None
-        value, explanation = sh.explain('classification data')
+        value, explanation = self.sh.explain('classification data')
         self.assertEqual(value, 0.625)
         self.assertEqual(type(explanation), list)
         self.assertEqual(len(explanation), 3)
         # Test when all plugins return one
         plugin1.explain.return_value = None, 'test'
         plugin2.explain.return_value = None, 'test'
-        value, explanation = sh.explain('classification data')
+        value, explanation = self.sh.explain('classification data')
         self.assertEqual(type(explanation), list)
         self.assertEqual(len(explanation), 3)
         self.assertEqual(value, 0)
@@ -53,10 +57,10 @@ class TestSpicedHam(TestCase):
         plugin1 = Mock()
         plugin2 = Mock()
         mock_classifier_plugins = [plugin0, plugin1, plugin2]
-        sh = Spicedham()
-        sh._classifier_plugins = mock_classifier_plugins
+        classification_type = 'type'
+        self.sh._classifier_plugins = mock_classifier_plugins
         # Test when some plugins return numbers and some return None
-        sh.train('classification data', True)
+        self.sh.train(classification_type, 'classification data', True)
         self.assertTrue(plugin0.train.called)
         self.assertTrue(plugin1.train.called)
         self.assertTrue(plugin2.train.called)
@@ -73,8 +77,7 @@ class TestSpicedHam(TestCase):
         plugin1 = Mock()
         plugin2 = Mock()
         mock_all_subclasses.return_value = [plugin0, plugin1, plugin2]
-        sh = Spicedham()
-        sh._load_plugins()
+        self.sh._load_plugins()
         self.assertEqual(plugin0.called, True)
         self.assertEqual(plugin1.called, True)
         self.assertEqual(plugin2.called, True)
@@ -91,12 +94,15 @@ class TestSpicedHam(TestCase):
         backend2 = Mock()
         backend2.__name__ = 'StillNotSqlAlchemyWrapper'
         mock_all_subclasses.return_value = [backend0, backend1, backend2]
-        sh = Spicedham()
-        sh._load_backend()
-        self.assertEqual(sh.backend, backend0Returns)
-        sh = Spicedham()
+        self.sh._load_backend()
+        self.assertEqual(self.sh.backend, backend0Returns)
+
+    @patch('spicedham.Spicedham._load_tokenizer')
+    @patch('spicedham.Spicedham.all_subclasses')
+    def test_load_backend_no_backends(self, mock_all_subclasses,
+                                      mock_load_tokenizer):
         mock_all_subclasses.return_value = []
-        self.assertRaises(NoBackendFoundError, sh._load_backend)
+        self.assertRaises(NoBackendFoundError, self.sh._load_backend)
 
     @patch('spicedham.Spicedham._load_backend')
     @patch('spicedham.Spicedham.all_subclasses')
@@ -110,12 +116,15 @@ class TestSpicedHam(TestCase):
         tokenizer2 = Mock()
         tokenizer2.__name__ = 'StillNotSqlAlchemyWrapper'
         mock_all_subclasses.return_value = [tokenizer0, tokenizer1, tokenizer2]
-        sh = Spicedham()
-        sh._load_tokenizer()
-        self.assertEqual(sh.tokenizer, tokenizer0Returns)
-        sh = Spicedham()
+        self.sh._load_tokenizer()
+        self.assertEqual(self.sh.tokenizer, tokenizer0Returns)
+
+    @patch('spicedham.Spicedham._load_backend')
+    @patch('spicedham.Spicedham.all_subclasses')
+    def test_load_tokenizer_no_tokenizers(self, mock_all_subclasses,
+                                          mock_load_backend):
         mock_all_subclasses.return_value = []
-        self.assertRaises(NoTokenizerFoundError, sh._load_tokenizer)
+        self.assertRaises(NoTokenizerFoundError, self.sh._load_tokenizer)
 
     def test_all_subclasses(self):
 
@@ -127,8 +136,7 @@ class TestSpicedHam(TestCase):
 
         class child1(parent):
             pass
-        sh = Spicedham()
-        result = sh.all_subclasses(parent)
+        result = self.sh.all_subclasses(parent)
         self.assertTrue(child0 in result)
         self.assertTrue(child1 in result)
         self.assertEqual(2, len(result))
